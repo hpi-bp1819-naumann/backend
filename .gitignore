@@ -1,0 +1,5 @@
+.idea/
+*.iml
+**/*.iml
+target/
+deequ-1.0.0-SNAPSHOT-jar-with-dependencies.jar
