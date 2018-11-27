@@ -3,8 +3,13 @@ package com.amazon.scalatra4deequ
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 import com.amazon.deequ.analyzers.jdbc._
+import org.slf4j.{Logger, LoggerFactory}
+
+object Server extends Scalatra4DeequServlet
 
 class Scalatra4DeequServlet() extends ScalatraServlet with ScalateSupport {
+    val logger =  LoggerFactory.getLogger(getClass)
+
     get("/") {
     contentType = "text/html"
     }
@@ -13,51 +18,53 @@ class Scalatra4DeequServlet() extends ScalatraServlet with ScalateSupport {
     redirect("/")
     }
     get("/completeness") {
-      JdbcCompleteness()
+      //JdbcCompleteness()
     }
     get("/compliance") {
-      JdbcCompliance()
+      //JdbcCompliance()
     }
     get("/correlation") {
-      JdbcCorrelation()
+      //JdbcCorrelation()
     }
     get("/countDistinct") {
-      JdbcCountDistinct()
+      //JdbcCountDistinct()
     }
     get("/dataType") {
-      JdbcDataType()
+      //JdbcDataType()
     }
     get("/distinctness") {
-      JdbcDistinctness()
+      //JdbcDistinctness()
     }
     get("/entropy") {
-      JdbcEntropy()
+      EntropyWithJdbc
+      redirect("/")
     }
     get("/histogram") {
-      JdbcHistogram()
+      //JdbcHistogram()
     }
     get("/maximum") {
-      JdbcMaximum()
+      //JdbcMaximum()
     }
     get("/mean") {
-      JdbcMean()
+      //JdbcMean()
     }
     get("/minimum") {
-      JdbcMinimum()
+      //JdbcMinimum()
     }
     get("/patternMatch") {
-      JdbcPatternMatch()
+      //JdbcPatternMatch()
     }
     get("/size") {
-      JdbcSize()
+      //JdbcSize()
     }
     get("/standardDeviation") {
-      JdbcStandardDeviation()
+      //JdbcStandardDeviation()
     }
     get("/sum") {
-      JdbcSum()
+      logger.debug("Starting search for nearest gas station.")
+      "hi1"
     }
     get("/uniqueness") {
-      JdbcUniqueness()
+      //JdbcUniqueness()
     }
 }

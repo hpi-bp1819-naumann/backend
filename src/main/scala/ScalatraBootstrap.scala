@@ -5,6 +5,6 @@ import javax.servlet.ServletContext
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext) {
     //val todos = collection.mutable.Map[Integer, Todo]()
-    //context mount (new Scalatra4DeequServlet(todos), "/*")
+    context mount (new Scalatra4DeequServlet(), "/*")
     }
 }
