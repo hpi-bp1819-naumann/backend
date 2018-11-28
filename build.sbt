@@ -2,7 +2,7 @@ val ScalatraVersion = "2.6.3"
 
 organization := "com.amazon"
 
-name := "Scalatra4Deequ"
+name := "backend"
 
 version := "0.1.0-SNAPSHOT"
 
@@ -20,7 +20,8 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.4.9.v20180320" % "container",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
-  "com.sun.jersey" % "jersey-server" % "1.19.4"
+  "com.sun.jersey" % "jersey-server" % "1.19.4",
+  "net.liftweb" %% "lift-json" % "3.3.0"
 )
 
 unmanagedBase := baseDirectory.value / "lib"
