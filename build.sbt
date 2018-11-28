@@ -1,10 +1,10 @@
 val ScalatraVersion = "2.6.3"
 
-organization := "com.amazon"
+organization := "com.amazon.deequ"
 
 name := "backend"
 
-version := "0.1.0-SNAPSHOT"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.5"
 
