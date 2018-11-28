@@ -1,8 +1,9 @@
-package com.amazon.scalatra4deequ  // remember this package in the sbt project definition
-import org.eclipse.jetty.server._
-import org.eclipse.jetty.servlet.{DefaultServlet, ServletContextHandler}
-import org.eclipse.jetty.webapp.WebAppContext
+package com.amazon.deequ.backend
+
 import org.scalatra.servlet.ScalatraListener
+import org.eclipse.jetty.server._
+import org.eclipse.jetty.servlet.DefaultServlet
+import org.eclipse.jetty.webapp.WebAppContext
 
 object JettyLauncher { // this is my entry object as specified in sbt project definition
   def main(args: Array[String]) {
@@ -11,7 +12,7 @@ object JettyLauncher { // this is my entry object as specified in sbt project de
     val server = new Server(port)
     val context = new WebAppContext()
     context setContextPath "/"
-    context.setResourceBase("src/main/scala/com/amazon/scalatra4deequ")
+    context.setResourceBase("src/main/scala/com/amazon/deequ/backend")
     context.addEventListener(new ScalatraListener)
     context.addServlet(classOf[DefaultServlet], "/")
 
