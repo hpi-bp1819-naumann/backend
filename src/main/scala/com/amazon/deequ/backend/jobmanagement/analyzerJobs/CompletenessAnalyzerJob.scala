@@ -2,29 +2,26 @@ package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
 import com.amazon.deequ.analyzers.jdbc.JdbcCompleteness
 import com.amazon.deequ.analyzers.{Completeness, NumMatchesAndCount}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
 import com.amazon.deequ.metrics.DoubleMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
-class CompletenessAnalyzerParams(var context: String, var table: String,
-                                 var column: String, var where: Option[String] = None)
+object CompletenessAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
-object CompletenessAnalyzerJob extends AnalyzerJob {
+  val name = "Completeness"
+  val description = "description for completeness analyzer"
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[CompletenessAnalyzerParams]
+  def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
+    requestParams.extract[ColumnAndWhereAnalyzerParams]
+  }
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[NumMatchesAndCount, DoubleMetric, JdbcCompleteness](
-        JdbcCompleteness(params.column, params.where), params.table)
-      case "spark" => analyzerWithSpark[NumMatchesAndCount, DoubleMetric, Completeness](
-        Completeness(params.column, params.where), params.table)
+  def funcWithJdbc(params: ColumnAndWhereAnalyzerParams): Any = {
+    analyzerWithJdbc[NumMatchesAndCount, DoubleMetric, JdbcCompleteness](
+      JdbcCompleteness(params.column, params.where), params.table)
+  }
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
-
-    ExecutableAnalyzerJob(func)
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+    analyzerWithSpark[NumMatchesAndCount, DoubleMetric, Completeness](
+      Completeness(params.column, params.where), params.table)
   }
 }

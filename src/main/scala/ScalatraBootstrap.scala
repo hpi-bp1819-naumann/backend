@@ -1,6 +1,6 @@
 import com.amazon.deequ.backend.servlets.JobManagementServlet
-import org.scalatra.LifeCycle
 import javax.servlet.ServletContext
+import org.scalatra.LifeCycle
 
 class ScalatraBootstrap extends LifeCycle {
 

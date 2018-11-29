@@ -1,6 +1,6 @@
 package com.amazon.deequ.backend.utils
 
-import java.sql.{Connection, DriverManager, ResultSet}
+import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
 import org.apache.spark.sql.SparkSession

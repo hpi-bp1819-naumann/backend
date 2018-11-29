@@ -2,29 +2,26 @@ package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{Entropy, FrequenciesAndNumRows}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAnalyzerParams}
 import com.amazon.deequ.metrics.DoubleMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
-class EntropyAnalyzerParams(var context: String, var table: String,
-                            var column: String)
+object EntropyAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
-object EntropyAnalyzerJob extends AnalyzerJob {
+  val name = "Entropy"
+  val description = "description for entropy analyzer"
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[EntropyAnalyzerParams]
+  def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
+    requestParams.extract[ColumnAnalyzerParams]
+  }
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[JdbcFrequenciesAndNumRows, DoubleMetric, JdbcEntropy](
-        JdbcEntropy(params.column), params.table)
-      case "spark" => analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Entropy](
-        Entropy(params.column), params.table)
+  def funcWithJdbc(params: ColumnAnalyzerParams): Any = {
+    analyzerWithJdbc[JdbcFrequenciesAndNumRows, DoubleMetric, JdbcEntropy](
+      JdbcEntropy(params.column), params.table)
+  }
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
-
-    ExecutableAnalyzerJob(func)
+  def funcWithSpark(params: ColumnAnalyzerParams) {
+    analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Entropy](
+      Entropy(params.column), params.table)
   }
 }

@@ -2,30 +2,31 @@ package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{Correlation, CorrelationState}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, AnalyzerParams}
 import com.amazon.deequ.metrics.DoubleMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
-class CorrelationAnalyzerParams(var context: String, var table: String,
+case class CorrelationAnalyzerParams(context: String, table: String,
                                 var firstColumn: String, var secondColumn: String,
                                 var where: Option[String] = None)
+  extends AnalyzerParams
 
-object CorrelationAnalyzerJob extends AnalyzerJob {
+object CorrelationAnalyzerJob extends AnalyzerJob[CorrelationAnalyzerParams] {
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[CorrelationAnalyzerParams]
+  val name = "Correlation"
+  val description = "description for correlation analyzer"
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[CorrelationState, DoubleMetric, JdbcCorrelation](
-        JdbcCorrelation(params.firstColumn, params.secondColumn, params.where), params.table)
-      case "spark" => analyzerWithSpark[CorrelationState, DoubleMetric, Correlation](
-        Correlation(params.firstColumn, params.secondColumn, params.where), params.table)
+  def extractFromJson(requestParams: JValue): CorrelationAnalyzerParams = {
+    requestParams.extract[CorrelationAnalyzerParams]
+  }
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
+  def funcWithJdbc(params: CorrelationAnalyzerParams): Any = {
+    analyzerWithJdbc[CorrelationState, DoubleMetric, JdbcCorrelation](
+      JdbcCorrelation(params.firstColumn, params.secondColumn, params.where), params.table)
+  }
 
-    ExecutableAnalyzerJob(func)
+  def funcWithSpark(params: CorrelationAnalyzerParams) {
+    analyzerWithSpark[CorrelationState, DoubleMetric, Correlation](
+      Correlation(params.firstColumn, params.secondColumn, params.where), params.table)
   }
 }
