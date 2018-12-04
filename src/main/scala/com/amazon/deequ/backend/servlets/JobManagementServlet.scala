@@ -9,12 +9,11 @@ import org.slf4j.LoggerFactory
 
 class JobManagementServlet extends ScalatraServlet
   with JacksonJsonSupport {
-  protected implicit lazy val jsonFormats: Formats = DefaultFormats
 
+  protected implicit lazy val jsonFormats: Formats = DefaultFormats
   private val logger =  LoggerFactory.getLogger(getClass)
 
   private val jobManager = new JobManagement
-
 
   def generateErrorResponse(ex: Exception): ActionResult = {
     val response = ("message" -> "There was an error during processing your request") ~
