@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{Mean, MeanState}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
@@ -10,6 +12,8 @@ object MeanAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Mean"
   val description = "The Mean analyzer calculates the mean of a given column."
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
     requestParams.extract[ColumnAndWhereAnalyzerParams]

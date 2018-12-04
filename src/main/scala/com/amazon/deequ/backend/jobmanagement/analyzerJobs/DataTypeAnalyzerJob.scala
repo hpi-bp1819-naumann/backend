@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{DataType, DataTypeHistogram}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
@@ -10,6 +12,8 @@ object DataTypeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "DataType"
   val description = "description for dataType analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
     requestParams.extract[ColumnAndWhereAnalyzerParams]

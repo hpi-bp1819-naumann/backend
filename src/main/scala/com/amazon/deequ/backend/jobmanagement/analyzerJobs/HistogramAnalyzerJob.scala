@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{FrequenciesAndNumRows, Histogram}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAnalyzerParams}
@@ -10,6 +12,8 @@ object HistogramAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
   val name = "Histogram"
   val description = "description for histogram analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
     requestParams.extract[ColumnAnalyzerParams]

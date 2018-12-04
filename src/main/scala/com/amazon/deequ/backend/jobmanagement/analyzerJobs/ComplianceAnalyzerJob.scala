@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{Compliance, NumMatchesAndCount}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, AnalyzerParams}
@@ -15,6 +17,8 @@ object ComplianceAnalyzerJob extends AnalyzerJob[ComplianceAnalyzerParams] {
 
   val name = "Compliance"
   val description = "description for compliance analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ComplianceAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ComplianceAnalyzerParams = {
     requestParams.extract[ComplianceAnalyzerParams]

@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc.JdbcCompleteness
 import com.amazon.deequ.analyzers.{Completeness, NumMatchesAndCount}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
@@ -10,6 +12,8 @@ object CompletenessAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams]
 
   val name = "Completeness"
   val description = "description for completeness analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
     requestParams.extract[ColumnAndWhereAnalyzerParams]

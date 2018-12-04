@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{CountDistinct, FrequenciesAndNumRows}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAnalyzerParams}
@@ -10,6 +12,8 @@ object CountDistinctAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
   val name = "CountDistinct"
   val description = "description for count distinct analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
     requestParams.extract[ColumnAnalyzerParams]

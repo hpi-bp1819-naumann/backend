@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{NumMatches, Size}
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
@@ -10,6 +12,8 @@ object SizeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Size"
   val description = "The Size analyzer computes the size of a given table"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
     requestParams.extract[ColumnAndWhereAnalyzerParams]

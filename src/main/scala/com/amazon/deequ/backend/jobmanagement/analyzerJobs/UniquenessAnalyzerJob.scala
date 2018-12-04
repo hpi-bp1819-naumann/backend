@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{FrequenciesAndNumRows, Uniqueness}
 import com.amazon.deequ.backend.jobmanagement._
@@ -10,6 +12,8 @@ object UniquenessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
   val name = "Uniqueness"
   val description = "description for uniqueness analyzer"
+
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
     requestParams.extract[ColumnAnalyzerParams]
