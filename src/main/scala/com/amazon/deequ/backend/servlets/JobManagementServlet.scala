@@ -1,10 +1,10 @@
 package com.amazon.deequ.backend.servlets
 
 import com.amazon.deequ.backend.jobmanagement.JobManagement
-import net.liftweb.json._
-import org.json4s.DefaultFormats
-import net.liftweb.json.JsonDSL._
-import org.scalatra.ScalatraServlet
+import org.json4s.JsonDSL._
+import org.json4s.{DefaultFormats, Formats}
+import org.scalatra._
+import org.scalatra.json._
 import org.slf4j.LoggerFactory
 
 class JobManagementServlet extends ScalatraServlet {

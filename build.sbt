@@ -6,7 +6,7 @@ name := "backend"
 
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
 resolvers += Classpaths.typesafeReleases
 
@@ -24,9 +24,7 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
   "com.sun.jersey" % "jersey-server" % "1.19.4",
   "net.liftweb" %% "lift-json" % "3.3.0",
-  "com.typesafe.slick" %% "slick" % "3.2.0",
-  "org.postgresql" % "postgresql" % "9.4.1209",
-  "com.mchange" % "c3p0" % "0.9.5.2"
+  "org.json4s"   %% "json4s-jackson" % "3.6.2"
 )
 
 unmanagedBase := baseDirectory.value / "lib"
