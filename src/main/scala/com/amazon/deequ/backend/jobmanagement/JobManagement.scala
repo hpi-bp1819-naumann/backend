@@ -1,14 +1,17 @@
 package com.amazon.deequ.backend.jobmanagement
 
-import net.liftweb.json._
 import java.util.UUID.randomUUID
+
 import com.amazon.deequ.backend.jobmanagement.analyzerJobs._
+import org.json4s.JValue
+
+import scala.collection.immutable.ListMap
 
 class JobManagement {
 
   private var jobs = Map[String, ExecutableAnalyzerJob]()
 
-  private val availableAnalyzers = Map[String, AnalyzerJob](
+  private val availableAnalyzers = ListMap[String, AnalyzerJob[_]](
     "completeness" -> CompletenessAnalyzerJob,
     "compliance" -> ComplianceAnalyzerJob,
     "correlation" -> CorrelationAnalyzerJob,
@@ -28,15 +31,19 @@ class JobManagement {
     "uniqueValueRatio" -> UniqueValueRatioAnalyzerJob
   )
 
-  def getAvailableAnalyzers(): Set[String] = {
-    availableAnalyzers.keySet
+  def getAvailableAnalyzers(): Seq[Map[String, String]] = {
+    availableAnalyzers.map(
+      entry => Map[String, String](
+        "name" -> entry._2.name, "key" -> entry._1, "description" -> entry._2.description)).toSeq
   }
 
   def startJob(requestedAnalyzer: String, params: JValue): String = {
     val jobId = randomUUID().toString.replace("-", "")
 
     if (!availableAnalyzers.exists(_._1 == requestedAnalyzer)) {
-      throw new Exception("there is no analyzer called " + requestedAnalyzer)
+      throw new NoSuchAnalyzerException(
+        s"There is no analyzer called $requestedAnalyzer. " +
+          s"Available analyzers are ${availableAnalyzers.keys.mkString("[", ", ", "]")}")
     }
 
     val analyzer = availableAnalyzers(requestedAnalyzer)
@@ -59,3 +66,16 @@ class JobManagement {
     jobs(jobId).runtimeInNs
   }
 }
+
+trait AnalyzerParams {
+  val context: String
+  val table: String
+}
+
+case class ColumnAnalyzerParams(context: String, table: String, var column: String)
+  extends AnalyzerParams
+
+case class ColumnAndWhereAnalyzerParams(context: String, table: String,
+                                        var column: String,
+                                        var where: Option[String] = None)
+  extends AnalyzerParams
