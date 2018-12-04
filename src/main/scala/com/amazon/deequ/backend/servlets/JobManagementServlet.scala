@@ -7,50 +7,70 @@ import org.scalatra._
 import org.scalatra.json._
 import org.slf4j.LoggerFactory
 
-class JobManagementServlet extends ScalatraServlet {
+class JobManagementServlet extends ScalatraServlet
+  with JacksonJsonSupport {
+  protected implicit lazy val jsonFormats: Formats = DefaultFormats
 
   private val logger =  LoggerFactory.getLogger(getClass)
 
   private val jobManager = new JobManagement
 
+
+  def generateErrorResponse(ex: Exception): ActionResult = {
+    val response = ("message" -> "There was an error during processing your request") ~
+      ("error" -> ("type" -> ex.getClass.toString) ~ ("message" -> ex.getMessage))
+    BadRequest(response)
+  }
+
+  val errorHandling: PartialFunction[Throwable, ActionResult] = {
+    case e: Exception => generateErrorResponse(e)
+  }
+
+  before() {
+    contentType = formats("json")
+  }
+
   get("/analyzers") {
-    val analyzers = jobManager.getAvailableAnalyzers()
-    compactRender("analyzers" -> analyzers)
+    try {
+      val analyzers = jobManager.getAvailableAnalyzers()
+      Ok("analyzers" -> analyzers)
+    } catch errorHandling
   }
 
   post("/:analyzer/start") {
-    logger.debug("start...")
-
-    val jsonString = request.body
-    logger.debug(jsonString)
-    implicit val formats = DefaultFormats
-    val jValue = parse(jsonString)
-
-    val analyzer = params("analyzer")
-    val jobId = jobManager.startJob(analyzer, jValue)
-    val response = ("message" -> "Successfully started job") ~
-      ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
-    compactRender(response)
+    try {
+      val analyzer = params("analyzer")
+      val jobId = jobManager.startJob(analyzer, parsedBody)
+      val response = ("message" -> "Successfully started job") ~
+        ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
+      Ok(response)
+    } catch errorHandling
   }
 
   get("/:jobId/status") {
-    val jobId = params("jobId")
-    val status = jobManager.getJobStatus(jobId)
-    val response = ("jobId" -> jobId) ~ ("status" -> status.toString)
-    compactRender(response)
+    try {
+      val jobId = params("jobId")
+      val status = jobManager.getJobStatus(jobId)
+      val response = ("jobId" -> jobId) ~ ("status" -> status.toString)
+      Ok(response)
+    } catch errorHandling
   }
 
   get("/:jobId/result") {
-    val jobId = params("jobId")
-    val result = jobManager.getJobResult(jobId)
-    val response = ("jobId" -> jobId) ~ ("result" -> result.toString)
-    compactRender(response)
+    try {
+      val jobId = params("jobId")
+      val result = jobManager.getJobResult(jobId)
+      val response = ("jobId" -> jobId) ~ ("result" -> result.toString)
+      Ok(response)
+    } catch errorHandling
   }
 
   get("/:jobId/runtime") {
-    val jobId = params("jobId")
-    val runtime = jobManager.getJobRuntime(jobId)
-    val response = ("jobId" -> jobId) ~ ("runtime" -> runtime.toString)
-    compactRender(response)
+    try {
+      val jobId = params("jobId")
+      val runtime = jobManager.getJobRuntime(jobId)
+      val response = ("jobId" -> jobId) ~ ("runtime" -> runtime.toString)
+      Ok(response)
+    } catch errorHandling
   }
 }

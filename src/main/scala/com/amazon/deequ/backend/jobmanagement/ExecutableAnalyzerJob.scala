@@ -1,6 +1,6 @@
 package com.amazon.deequ.backend.jobmanagement
 
-case class ExecutableAnalyzerJob(analyzerFunc: () => Any) extends Runnable {
+case class ExecutableAnalyzerJob(analyzerFunc: () => Any, context: String) extends Runnable {
 
   var status: JobStatus.Value = JobStatus.ready
   var result: Any = None

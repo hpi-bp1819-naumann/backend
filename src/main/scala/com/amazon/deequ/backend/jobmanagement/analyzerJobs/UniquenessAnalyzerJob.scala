@@ -1,30 +1,31 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{FrequenciesAndNumRows, Uniqueness}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement._
 import com.amazon.deequ.metrics.DoubleMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
-class UniquenessAnalyzerParams(var context: String, var table: String,
-                               var column: String)
+object UniquenessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
-object UniquenessAnalyzerJob extends AnalyzerJob {
+  val name = "Uniqueness"
+  val description = "description for uniqueness analyzer"
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[UniquenessAnalyzerParams]
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[JdbcFrequenciesAndNumRows, DoubleMetric, JdbcUniqueness](
-        JdbcUniqueness(params.column), params.table)
-      case "spark" => analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Uniqueness](
-        Uniqueness(params.column), params.table)
+  def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
+    requestParams.extract[ColumnAnalyzerParams]
+  }
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
+  def funcWithJdbc(params: ColumnAnalyzerParams): Any = {
+    analyzerWithJdbc[JdbcFrequenciesAndNumRows, DoubleMetric, JdbcUniqueness](
+      JdbcUniqueness(params.column), params.table)
+  }
 
-    ExecutableAnalyzerJob(func)
+  def funcWithSpark(params: ColumnAnalyzerParams) {
+    analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Uniqueness](
+      Uniqueness(params.column), params.table)
   }
 }

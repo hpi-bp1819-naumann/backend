@@ -1,33 +1,38 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{NumMatchesAndCount, PatternMatch}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, AnalyzerParams, ColumnAndWhereAnalyzerParams}
 import com.amazon.deequ.metrics.DoubleMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
 import scala.util.matching.Regex
 
-class PatternMatchAnalyzerParams(var context: String, var table: String,
+case class PatternMatchAnalyzerParams(context: String, table: String,
                                  var column: String, var pattern: Regex,
                                  var where: Option[String] = None)
+  extends AnalyzerParams
 
-object PatternMatchAnalyzerJob extends AnalyzerJob {
+object PatternMatchAnalyzerJob extends AnalyzerJob[PatternMatchAnalyzerParams] {
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[PatternMatchAnalyzerParams]
+  val name = "PatternMatch"
+  val description = "description for patternMatch analyzer"
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[NumMatchesAndCount, DoubleMetric, JdbcPatternMatch](
-        JdbcPatternMatch(params.column, params.pattern, params.where), params.table)
-      case "spark" => analyzerWithSpark[NumMatchesAndCount, DoubleMetric, PatternMatch](
-        PatternMatch(params.column, params.pattern, params.where), params.table)
+  val acceptedRequestParams: () => String = () => extractFieldNames[PatternMatchAnalyzerParams]
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
+  def extractFromJson(requestParams: JValue): PatternMatchAnalyzerParams = {
+    requestParams.extract[PatternMatchAnalyzerParams]
+  }
 
-    ExecutableAnalyzerJob(func)
+  def funcWithJdbc(params: PatternMatchAnalyzerParams): Any = {
+    analyzerWithJdbc[NumMatchesAndCount, DoubleMetric, JdbcPatternMatch](
+      JdbcPatternMatch(params.column, params.pattern, params.where), params.table)
+  }
+
+  def funcWithSpark(params: PatternMatchAnalyzerParams) {
+    analyzerWithSpark[NumMatchesAndCount, DoubleMetric, PatternMatch](
+      PatternMatch(params.column, params.pattern, params.where), params.table)
   }
 }

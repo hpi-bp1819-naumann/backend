@@ -1,30 +1,31 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
+import java.lang.reflect.Constructor
+
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{DataType, DataTypeHistogram}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ExecutableAnalyzerJob}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
 import com.amazon.deequ.metrics.HistogramMetric
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.JsonAST.JValue
+import org.json4s.JValue
 
-class DataTypeAnalyzerParams(var context: String, var table: String,
-                             var column: String, var where: Option[String] = None)
+object DataTypeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
-object DataTypeAnalyzerJob extends AnalyzerJob {
+  val name = "DataType"
+  val description = "description for dataType analyzer"
 
-  def from(requestParams: JValue): ExecutableAnalyzerJob = {
-    implicit val formats = DefaultFormats
-    val params = requestParams.extract[DataTypeAnalyzerParams]
+  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
-    val func = () => params.context match {
-      case "jdbc" => analyzerWithJdbc[DataTypeHistogram, HistogramMetric, JdbcDataType](
-        JdbcDataType(params.column), params.table)
-      case "spark" => analyzerWithSpark[DataTypeHistogram, HistogramMetric, DataType](
-        DataType(params.column), params.table)
+  def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
+    requestParams.extract[ColumnAndWhereAnalyzerParams]
+  }
 
-      case _ => throw new Exception("does not support context " + params.context)
-    }
+  def funcWithJdbc(params: ColumnAndWhereAnalyzerParams): Any = {
+    analyzerWithJdbc[DataTypeHistogram, HistogramMetric, JdbcDataType](
+      JdbcDataType(params.column), params.table)
+  }
 
-    ExecutableAnalyzerJob(func)
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+    analyzerWithSpark[DataTypeHistogram, HistogramMetric, DataType](
+      DataType(params.column), params.table)
   }
 }
