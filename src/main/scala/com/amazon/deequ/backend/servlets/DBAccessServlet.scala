@@ -2,6 +2,7 @@ package com.amazon.deequ.backend.servlets
 
 import com.amazon.deequ.backend.dbAccess.DbAccess
 import org.scalatra.{Ok, ScalatraServlet}
+import org.json4s.JsonDSL._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 import org.slf4j.LoggerFactory
@@ -14,19 +15,13 @@ class DBAccessServlet extends ScalatraServlet
 
   val dbAccess = new DbAccess
 
-  before() {
-    contentType = formats("json")
-  }
-
   get("/tables") {
-    val result = dbAccess.getTables()
-    val response = ("tables" -> result) ~ Nil
-    Ok(response)
+    val tables = dbAccess.getTables()
+    Ok(("tables" -> tables) ~ Nil)
   }
 
   get("/columns") {
-    val result = dbAccess.getColumns()
-    val response = ("columns" -> result) ~ Nil
-    Ok(response)
+    val columns = dbAccess.getColumns()
+    Ok(("columns" -> columns) ~ Nil)
   }
 }
