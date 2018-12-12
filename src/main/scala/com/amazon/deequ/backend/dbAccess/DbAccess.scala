@@ -1,10 +1,13 @@
 package com.amazon.deequ.backend.dbAccess
 
 import com.amazon.deequ.backend.utils.JdbcUtils.withJdbc
+import org.scalatra.Ok
 
 class DbAccess {
 
-  def getTables(): List[String] = {
+
+  def getTables() {
+    var tables = ""
     withJdbc { connection =>
       var list = List[String]()
       val md = connection.getMetaData
@@ -12,11 +15,12 @@ class DbAccess {
       while (rs.next) {
         list = rs.getString(3) :: list
       }
-      return list.sorted
+      tables = list.sorted.mkString(", ")
     }
-    List[String]()
+    Ok("tables" -> tables)
   }
-  def getColumns(): List[String] = {
+  def getColumns() {
+    var columns = ""
     withJdbc { connection =>
       var set = Set[String]() //use set here to remove duplicates
       val md = connection.getMetaData
@@ -25,8 +29,8 @@ class DbAccess {
         set += rs.getString(3)
       }
       val list = set.toList
-      return list.sorted
+      columns = list.sorted.mkString(", ")
     }
-    List[String]()
+    Ok("columns" -> columns)
   }
 }
