@@ -29,4 +29,12 @@ class DBAccessServlet extends ScalatraServlet
     val schemas = dbAccess.getSchemas()
     Ok(("schemas" -> schemas) ~ Nil)
   }
+
+  get ("/:table/data") {
+    val tableName = params("table")
+    val metaData = dbAccess.getMetaData(tableName)
+    val topNRows = dbAccess.getTopNRows(tableName, 100)
+
+    Ok(("metaData" -> metaData) ~ ("rows" -> topNRows))
+  }
 }
