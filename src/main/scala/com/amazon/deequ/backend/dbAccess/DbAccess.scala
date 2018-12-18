@@ -29,4 +29,17 @@ class DbAccess {
     }
     columns
   }
+  def getSchemas(): List[String] = {
+    var schemas = List[String]()
+    withJdbc { connection =>
+      var set = Set[String]() //use set here to remove duplicates
+      val md = connection.getMetaData
+      val rs = md.getColumns(null, "%", null,null)
+      while (rs.next){
+        set += rs.getString(3)
+      }
+      schemas = set.toList.sorted
+    }
+    schemas
+  }
 }

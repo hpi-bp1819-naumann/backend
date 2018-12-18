@@ -24,4 +24,9 @@ class DBAccessServlet extends ScalatraServlet
     val columns = dbAccess.getColumns()
     Ok(("columns" -> columns) ~ Nil)
   }
+
+  get("/schemas") {
+    val schemas = dbAccess.getSchemas()
+    Ok(("schemas" -> schemas) ~ Nil)
+  }
 }
