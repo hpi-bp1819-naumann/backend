@@ -17,7 +17,7 @@ object CorrelationAnalyzerJob extends AnalyzerJob[CorrelationAnalyzerParams] {
   val description = "description for correlation analyzer"
 
   val acceptedRequestParams: () => Array[RequestParameter] =
-    () => extractFieldNames[ColumnAndWhereAnalyzerParams]
+    () => extractFieldNames[CorrelationAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): CorrelationAnalyzerParams = {
     requestParams.extract[CorrelationAnalyzerParams]
