@@ -30,9 +30,14 @@ class JobManagementServlet extends ScalatraServlet
     contentType = formats("json")
   }
 
+  get("/") {
+    val jobs = jobManager.getJobs
+    Ok("jobs" -> jobs)
+  }
+
   get("/analyzers") {
     try {
-      val analyzers = jobManager.getAvailableAnalyzers()
+      val analyzers = jobManager.getAvailableAnalyzers
       Ok("analyzers" -> analyzers)
     } catch errorHandling
   }

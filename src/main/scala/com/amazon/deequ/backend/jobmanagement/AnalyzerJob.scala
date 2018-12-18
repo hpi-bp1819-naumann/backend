@@ -47,7 +47,7 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
           s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
     }
 
-    ExecutableAnalyzerJob(func, params.get.context)
+    ExecutableAnalyzerJob(func)
   }
 
   def analyzerWithJdbc[S <: State[_], M <: Metric[_], A <: JdbcAnalyzer[S, M]](analyzer: A, tableName: String): Any = {
