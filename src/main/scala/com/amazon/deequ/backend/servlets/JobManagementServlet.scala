@@ -21,6 +21,14 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
+  delete("/:jobId") {
+    try {
+      val jobId = params("jobId")
+      jobManager.deleteJob(jobId)
+      Ok("message" -> "Deleted job")
+    } catch errorHandling
+  }
+
   get("/analyzers") {
     try {
       val analyzers = jobManager.getAvailableAnalyzers

@@ -89,6 +89,10 @@ class JobManagement {
     jobId
   }
 
+  def deleteJob(jobId: String): Unit = {
+    jobs -= jobId
+  }
+
   def getJobStatus(jobId: String): JobStatus.Value = {
     jobs(jobId).status
   }
