@@ -5,7 +5,6 @@ import com.amazon.deequ.analyzers.{Analyzer, State}
 import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, withJdbc, withSpark}
 import com.amazon.deequ.metrics.Metric
 import org.json4s.{DefaultFormats, Formats, JValue}
-import java.lang.reflect.Constructor
 
 
 abstract class AnalyzerJob[T <: AnalyzerParams] {
@@ -18,11 +17,13 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
   def funcWithJdbc(params: T): Any
   def funcWithSpark(params: T): Any
   def extractFromJson(requestParams: JValue): T
-  val acceptedRequestParams: () => String
+  val acceptedRequestParams: () => Array[RequestParameter]
 
-  def extractFieldNames[M <: Product:Manifest] = {
-    implicitly[Manifest[M]].erasure.getDeclaredFields.map(_.getName).mkString("[", ", ", "]")
+  def extractFieldNames[M <: Product:Manifest]: Array[RequestParameter] = {
+    implicitly[Manifest[M]].erasure.getDeclaredFields.map(param =>
+      RequestParameter(param.getName, param.getType.getSimpleName))
   }
+
 
   def from(requestParams: JValue): ExecutableAnalyzerJob = {
     var params: Option[T] = None
@@ -32,21 +33,23 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
       params = Some(extractedParams)
     } catch {
       case e: org.json4s.MappingException =>
-        throw new RequestParamsException(s"There seems to be an error in your request parameters. " +
-          s"Please check the parameters " + acceptedRequestParams() + ". " +
+        throw new RequestParamsException(
+          s"There seems to be an error in your request parameters. " +
           s"The parameter extraction failed with: " + e.msg)
+    }
+
+    if (!AnalyzerContext.availableContexts().contains(params.get.context)) {
+      throw new NoSuchContextException(
+        s"There is not supported context called ${params.get.context}. " +
+          s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
     }
 
     val func = () => params.get.context match {
       case AnalyzerContext.jdbc => funcWithJdbc(params.get)
       case AnalyzerContext.spark => funcWithSpark(params.get)
-
-      case _ => throw new NoSuchContextException(
-        s"There is not supported context called ${params.get.context}. " +
-          s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
     }
 
-    ExecutableAnalyzerJob(func, params.get.context)
+    ExecutableAnalyzerJob(func)
   }
 
   def analyzerWithJdbc[S <: State[_], M <: Metric[_], A <: JdbcAnalyzer[S, M]](analyzer: A, tableName: String): Any = {
@@ -63,6 +66,8 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
     }
   }
 }
+
+case class RequestParameter(name: String, _type: String)
 
 object AnalyzerContext extends Enumeration {
   val jdbc = "jdbc"

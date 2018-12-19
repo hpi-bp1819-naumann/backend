@@ -1,10 +1,8 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
-import java.lang.reflect.Constructor
-
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{NumMatchesAndCount, PatternMatch}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, AnalyzerParams, ColumnAndWhereAnalyzerParams}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, AnalyzerParams, RequestParameter}
 import com.amazon.deequ.metrics.DoubleMetric
 import org.json4s.JValue
 
@@ -20,7 +18,8 @@ object PatternMatchAnalyzerJob extends AnalyzerJob[PatternMatchAnalyzerParams] {
   val name = "PatternMatch"
   val description = "description for patternMatch analyzer"
 
-  val acceptedRequestParams: () => String = () => extractFieldNames[PatternMatchAnalyzerParams]
+  val acceptedRequestParams: () => Array[RequestParameter] =
+    () => extractFieldNames[PatternMatchAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): PatternMatchAnalyzerParams = {
     requestParams.extract[PatternMatchAnalyzerParams]
