@@ -38,13 +38,15 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
           s"The parameter extraction failed with: " + e.msg)
     }
 
+    if (!AnalyzerContext.availableContexts().contains(params.get.context)) {
+      throw new NoSuchContextException(
+        s"There is not supported context called ${params.get.context}. " +
+          s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
+    }
+
     val func = () => params.get.context match {
       case AnalyzerContext.jdbc => funcWithJdbc(params.get)
       case AnalyzerContext.spark => funcWithSpark(params.get)
-
-      case _ => throw new NoSuchContextException(
-        s"There is not supported context called ${params.get.context}. " +
-          s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
     }
 
     ExecutableAnalyzerJob(func)
