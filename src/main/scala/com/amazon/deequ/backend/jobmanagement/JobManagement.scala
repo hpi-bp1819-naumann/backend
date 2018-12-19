@@ -45,14 +45,15 @@ class JobManagement {
     jobs.map {
       case (id: String, job: ExecutableAnalyzerJob) =>
         val status = job.status
-        val m = Map[String, Any](
+        var m = Map[String, Any](
           "id" -> id,
           "status" -> status.toString)
+        m += "startingTime" -> job.startTime
         if (status == JobStatus.completed) {
-          m + ("result" -> job.result)
-        } else {
-          m
+          m += ("result" -> job.result)
+          m += ("finishingTime" -> job.endTime)
         }
+        m
     }.toSeq
   }
 

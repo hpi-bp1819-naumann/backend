@@ -1,20 +1,24 @@
 package com.amazon.deequ.backend.jobmanagement
 
+import java.util.Date
+
 case class ExecutableAnalyzerJob(analyzerFunc: () => Any) extends Runnable {
 
   var status: JobStatus.Value = JobStatus.ready
   var result: Any = None
   var runtimeInNs: Long = -1
+  var startTime: Date = _
+  var endTime: Date = _
 
   def run(): Unit = {
     status = JobStatus.running
-    val startTime = System.nanoTime()
+    startTime = new Date()
 
     result = analyzerFunc()
-    val endTime = System.nanoTime()
+    endTime = new Date()
     status = JobStatus.completed
 
-    runtimeInNs = endTime - startTime
+    runtimeInNs = endTime.getTime - startTime.getTime
   }
 }
 
