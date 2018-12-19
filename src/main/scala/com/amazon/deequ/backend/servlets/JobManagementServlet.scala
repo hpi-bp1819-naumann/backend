@@ -8,6 +8,19 @@ class JobManagementServlet extends Servlet {
 
   private val jobManager = new JobManagement
 
+  get("/") {
+    val jobs = jobManager.getJobs
+    Ok("jobs" -> jobs)
+  }
+
+  get("/:jobId") {
+    try {
+      val jobId = params("jobId")
+      val details = jobManager.getJob(jobId)
+      Ok("job" -> details)
+    } catch errorHandling
+  }
+
   get("/analyzers") {
     try {
       val analyzers = jobManager.getAvailableAnalyzers

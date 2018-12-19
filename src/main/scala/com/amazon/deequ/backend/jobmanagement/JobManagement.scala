@@ -41,6 +41,21 @@ class JobManagement {
     )))).toSeq
   }
 
+  def getJob(jobId: String): Map[String, Any] = {
+    val job = Option(jobs(jobId))
+    job match {
+      case Some(theJob) =>
+        Map[String, Any]("id" -> jobId,
+          "status" -> theJob.status.toString,
+          "startingTime" -> theJob.startTime,
+          "finishingTime" -> theJob.endTime,
+          "result" -> theJob.result
+      )
+      case None =>
+        throw new IllegalArgumentException("Job Id is not assigned")
+    }
+  }
+
   def getJobs: Seq[Map[String, Any]] = {
     jobs.map {
       case (id: String, job: ExecutableAnalyzerJob) =>
@@ -83,7 +98,8 @@ class JobManagement {
   }
 
   def getJobRuntime(jobId: String): Any = {
-    jobs(jobId).runtimeInNs
+    val job = jobs(jobId)
+    job.endTime - job.startTime
   }
 }
 
