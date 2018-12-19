@@ -3,9 +3,8 @@ package com.amazon.deequ.backend.dbAccess
 import java.sql.ResultSet
 
 import com.amazon.deequ.backend.utils.JdbcUtils.withJdbc
+import com.amazon.deequ.backend.utils.NoSuchTableException
 import org.slf4j.LoggerFactory
-
-import scala.collection.mutable.ListBuffer
 
 class DbAccess {
 
@@ -54,9 +53,10 @@ class DbAccess {
     schemas
   }
 
-  def getMetaData(tableName: String): Map[String, Seq[String]] = {
 
-    var metaData = Map[String, Seq[String]]()
+  def getMetaData(tableName: String): Map[String, Any] = {
+
+    var metaData = Map[String, Any]()
 
     withJdbc { connection =>
 
@@ -73,11 +73,12 @@ class DbAccess {
         ResultSet.CONCUR_READ_ONLY)
 
       val result = statement.executeQuery()
-      var col_count = result.getMetaData.getColumnCount
+      val col_count = result.getMetaData.getColumnCount
 
-      metaData += ("table" -> Seq[String](tableName))
-      metaData += ("columnCount" -> Seq[String](col_count.toString))
-      metaData += ("columns" -> (1 to col_count).map(i => result.getMetaData.getColumnName(i)))
+      metaData += ("table" ->tableName)
+      metaData += ("columns" -> (1 to col_count).map(i =>
+        Map("name" -> result.getMetaData.getColumnName(i),
+          "dataType" -> result.getMetaData.getColumnTypeName(i))))
     }
 
     metaData
@@ -111,5 +112,13 @@ class DbAccess {
     }
 
     rows
+  }
+
+  def getTableData(tableName: String, n: Integer = 10): Map[String, Any] = {
+    if (!getTables().contains(tableName)) {
+      throw NoSuchTableException(s"Input data does not include table $tableName!")
+    }
+
+    Map("metaData" -> getMetaData(tableName), "rows" -> getTopNRows(tableName, n))
   }
 }
