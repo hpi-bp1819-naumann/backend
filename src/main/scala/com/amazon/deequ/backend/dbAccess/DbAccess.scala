@@ -1,5 +1,7 @@
 package com.amazon.deequ.backend.dbAccess
 
+import java.sql.ResultSet
+
 import com.amazon.deequ.backend.utils.JdbcUtils.withJdbc
 
 class DbAccess {
@@ -23,7 +25,7 @@ class DbAccess {
       val md = connection.getMetaData
       val rs = md.getColumns(null, null, "%",null)
       while (rs.next){
-        set += rs.getString(3)
+        set += rs.getString(4)
       }
       columns = set.toList.sorted
     }
@@ -32,13 +34,18 @@ class DbAccess {
   def getSchemas(): List[String] = {
     var schemas = List[String]()
     withJdbc { connection =>
-      var set = Set[String]() //use set here to remove duplicates
-      val md = connection.getMetaData
-      val rs = md.getColumns(null, "%", null,null)
+      val query =
+        s"""
+           |SELECT schema_name
+           |FROM information_schema.schemata
+      """.stripMargin
+      val statement = connection.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY,
+        ResultSet.CONCUR_READ_ONLY)
+      val rs = statement.executeQuery()
       while (rs.next){
-        set += rs.getString(3)
+        schemas = rs.getString(1) :: schemas
       }
-      schemas = set.toList.sorted
+      schemas = schemas.sorted
     }
     schemas
   }
