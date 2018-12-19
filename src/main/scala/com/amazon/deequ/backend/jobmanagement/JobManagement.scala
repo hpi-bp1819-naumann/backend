@@ -31,10 +31,30 @@ class JobManagement {
     "uniqueValueRatio" -> UniqueValueRatioAnalyzerJob
   )
 
-  def getAvailableAnalyzers(): Seq[Map[String, String]] = {
+  def getAvailableAnalyzers: Seq[Map[String, Any]] = {
     availableAnalyzers.map(
-      entry => Map[String, String](
-        "name" -> entry._2.name, "key" -> entry._1, "description" -> entry._2.description)).toSeq
+      entry => Map[String, Any](
+        "name" -> entry._2.name, "key" -> entry._1, "description" -> entry._2.description,
+      "parameters" -> entry._2.acceptedRequestParams().map(param => Map[String, Any](
+        "name" -> param.name,
+        "type" -> param._type
+    )))).toSeq
+  }
+
+  def getJobs: Seq[Map[String, Any]] = {
+    jobs.map {
+      case (id: String, job: ExecutableAnalyzerJob) =>
+        val status = job.status
+        var m = Map[String, Any](
+          "id" -> id,
+          "status" -> status.toString)
+        m += "startingTime" -> job.startTime
+        if (status == JobStatus.completed) {
+          m += ("result" -> job.result)
+          m += ("finishingTime" -> job.endTime)
+        }
+        m
+    }.toSeq
   }
 
   def startJob(requestedAnalyzer: String, params: JValue): String = {

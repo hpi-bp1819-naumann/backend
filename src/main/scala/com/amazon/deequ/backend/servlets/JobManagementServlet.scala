@@ -10,7 +10,7 @@ class JobManagementServlet extends Servlet {
 
   get("/analyzers") {
     try {
-      val analyzers = jobManager.getAvailableAnalyzers()
+      val analyzers = jobManager.getAvailableAnalyzers
       Ok("analyzers" -> analyzers)
     } catch errorHandling
   }

@@ -1,10 +1,8 @@
 package com.amazon.deequ.backend.jobmanagement.analyzerJobs
 
-import java.lang.reflect.Constructor
-
 import com.amazon.deequ.analyzers.jdbc._
 import com.amazon.deequ.analyzers.{StandardDeviation, StandardDeviationState}
-import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams}
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerJob, ColumnAndWhereAnalyzerParams, RequestParameter}
 import com.amazon.deequ.metrics.DoubleMetric
 import org.json4s.JValue
 
@@ -13,7 +11,8 @@ object StandardDeviationAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerPa
   val name = "StandardDeviation"
   val description = "description for standardDeviation analyzer"
 
-  val acceptedRequestParams: () => String = () => extractFieldNames[ColumnAndWhereAnalyzerParams]
+  val acceptedRequestParams: () => Array[RequestParameter] =
+    () => extractFieldNames[ColumnAndWhereAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAndWhereAnalyzerParams = {
     requestParams.extract[ColumnAndWhereAnalyzerParams]
