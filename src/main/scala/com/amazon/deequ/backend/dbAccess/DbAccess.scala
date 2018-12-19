@@ -89,6 +89,15 @@ class DbAccess {
     metaData
   }
 
+  def getMetaDataForAllTables(): List[Map[String,Any]] = {
+    var metadata = List[Map[String,Any]]()
+    val tables = getTables()
+    for (t<- tables) {
+      metadata = getMetaData(t) :: metadata
+    }
+    metadata
+  }
+
   def getTopNRows(tableName: String, n: Int): Seq[Seq[String]] = {
 
     var rows: Seq[Seq[String]] = Nil

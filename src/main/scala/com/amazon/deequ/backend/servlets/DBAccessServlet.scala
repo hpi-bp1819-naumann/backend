@@ -23,8 +23,12 @@ class DBAccessServlet extends Servlet {
     val schemas = dbAccess.getSchemas()
     Ok(("schemas" -> schemas) ~ Nil)
   }
+  get("/data") {
+    val metadata = dbAccess.getMetaDataForAllTables()
+    Ok(metadata)
+  }
 
-  get ("/:table/data") {
+  get ("/data/:table") {
     val tableName = params("table")
 
     try {
