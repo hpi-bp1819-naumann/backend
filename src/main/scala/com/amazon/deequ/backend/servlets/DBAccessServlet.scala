@@ -38,6 +38,21 @@ class DBAccessServlet extends Servlet {
     } catch errorHandling
   }
 
+  get("/rows/:table") {
+    val tableName = params("table")
+
+    val firstRows = dbAccess.getTopNRows(tableName)
+    Ok(firstRows)
+  }
+
+  get("/rows/:table/:n") {
+    val tableName = params("table")
+    val number = params("n").toInt
+
+    val firstRows = dbAccess.getTopNRows(tableName,number)
+    Ok(firstRows)
+  }
+
   get("/version/:product") {
     val productName = params("product")
     val version = dbAccess.getVersion(productName)

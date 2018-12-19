@@ -98,7 +98,7 @@ class DbAccess {
     metadata
   }
 
-  def getTopNRows(tableName: String, n: Int): Seq[Seq[String]] = {
+  def getTopNRows(tableName: String, n: Int = 10 ): Seq[Seq[String]] = {
 
     var rows: Seq[Seq[String]] = Nil
 
@@ -128,7 +128,7 @@ class DbAccess {
     rows
   }
 
-  def getTableData(tableName: String, n: Integer = 10): Map[String, Any] = {
+  def getTableData(tableName: String, n: Int = 10): Map[String, Any] = {
     if (!getTables().contains(tableName)) {
       throw NoSuchTableException(s"Input data does not include table $tableName!")
     }
