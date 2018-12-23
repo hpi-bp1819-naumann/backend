@@ -29,8 +29,8 @@ class DbAccess {
     withJdbc { connection =>
       var set = Set[String]() //use set here to remove duplicates
       val md = connection.getMetaData
-      val rs = md.getColumns(null, null, "%",null)
-      while (rs.next){
+      val rs = md.getColumns(null, null, "%", null)
+      while (rs.next) {
         set += rs.getString(4)
       }
       columns = set.toList.sorted
@@ -50,7 +50,7 @@ class DbAccess {
       val statement = connection.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY,
         ResultSet.CONCUR_READ_ONLY)
       val rs = statement.executeQuery()
-      while (rs.next){
+      while (rs.next) {
         schemas = rs.getString(1) :: schemas
       }
       schemas = schemas.sorted
@@ -80,7 +80,7 @@ class DbAccess {
       val result = statement.executeQuery()
       val col_count = result.getMetaData.getColumnCount
 
-      metaData += ("table" ->tableName)
+      metaData += ("table" -> tableName)
       metaData += ("columns" -> (1 to col_count).map(i =>
         Map("name" -> result.getMetaData.getColumnName(i),
           "dataType" -> result.getMetaData.getColumnTypeName(i))))
@@ -89,7 +89,16 @@ class DbAccess {
     metaData
   }
 
-  def getTopNRows(tableName: String, n: Int): Seq[Seq[String]] = {
+  def getMetaDataForAllTables(): List[Map[String, Any]] = {
+    var metadata = List[Map[String, Any]]()
+    val tables = getTables()
+    for (t <- tables) {
+      metadata = getMetaData(t) :: metadata
+    }
+    metadata
+  }
+
+  def getTopNRows(tableName: String, n: Int = 10 ): Seq[Seq[String]] = {
 
     var rows: Seq[Seq[String]] = Nil
 
@@ -119,11 +128,28 @@ class DbAccess {
     rows
   }
 
-  def getTableData(tableName: String, n: Integer = 10): Map[String, Any] = {
+  def getTableData(tableName: String, n: Int = 10): Map[String, Any] = {
     if (!getTables().contains(tableName)) {
       throw NoSuchTableException(s"Input data does not include table $tableName!")
     }
 
     Map("metaData" -> getMetaData(tableName), "rows" -> getTopNRows(tableName, n))
+  }
+
+  def getVersion(productName: String): String = {
+    var version = ""
+    withJdbc { connection =>
+      val md = connection.getMetaData
+      if(productName == "jdbc") {
+        version = md.getDriverMajorVersion.toString + "." + md.getDriverMinorVersion.toString
+      }
+      else if(productName == "db") {
+        version = md.getDatabaseProductName + " " + md.getDatabaseProductVersion
+      }
+      else {
+        version = "Unknown product!"
+      }
+    }
+    version
   }
 }

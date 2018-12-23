@@ -24,12 +24,38 @@ class DBAccessServlet extends Servlet {
     Ok(("schemas" -> schemas) ~ Nil)
   }
 
-  get ("/:table/data") {
+  get("/data") {
+    val metadata = dbAccess.getMetaDataForAllTables()
+    Ok(metadata)
+  }
+
+  get("/data/:table") {
     val tableName = params("table")
 
     try {
       val result = Serialization.write(dbAccess.getTableData(tableName))
       Ok(result, headers = Map[String, String]("content-Type" -> "application/json"))
     } catch errorHandling
+  }
+
+  get("/rows/:table") {
+    val tableName = params("table")
+
+    val firstRows = dbAccess.getTopNRows(tableName)
+    Ok(firstRows)
+  }
+
+  get("/rows/:table/:n") {
+    val tableName = params("table")
+    val number = params("n").toInt
+
+    val firstRows = dbAccess.getTopNRows(tableName,number)
+    Ok(firstRows)
+  }
+
+  get("/version/:product") {
+    val productName = params("product")
+    val version = dbAccess.getVersion(productName)
+    Ok(productName -> version)
   }
 }
