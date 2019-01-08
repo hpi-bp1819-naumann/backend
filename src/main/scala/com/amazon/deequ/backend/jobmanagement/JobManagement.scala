@@ -64,6 +64,7 @@ class JobManagement {
         val status = job.status
         var m = Map[String, Any](
           "id" -> id,
+          "name" -> job.analyzerName,
           "status" -> status.toString)
         m += "startingTime" -> job.startTime
         if (status == JobStatus.completed) {
