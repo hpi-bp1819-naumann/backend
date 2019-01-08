@@ -11,3 +11,13 @@ class NoSuchContextException(message: String)
 
 class RequestParamsException(message: String)
   extends JobManagementException(message)
+
+
+abstract class JobManagementRuntimeException(message: String)
+  extends Exception(message)
+
+class AnalyzerRuntimeException(message: String)
+  extends JobManagementRuntimeException(message)
+
+class SQLConnectionException(message: String)
+  extends JobManagementRuntimeException(message)

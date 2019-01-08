@@ -99,6 +99,10 @@ class JobManagement {
     jobs(jobId).status
   }
 
+  def getErrorMessage(jobId: String): Option[String] = {
+    jobs(jobId).errorMessage
+  }
+
   def getJobParams(jobId: String): Map[String, String] = {
     jobs(jobId).parameters
   }
