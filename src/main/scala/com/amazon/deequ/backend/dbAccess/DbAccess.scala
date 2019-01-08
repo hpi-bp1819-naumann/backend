@@ -100,7 +100,7 @@ class DbAccess {
 
   def getTopNRows(tableName: String, n: Int = 10 ): Seq[Seq[String]] = {
 
-    var rows: Seq[Seq[String]] = Nil
+    var rows = Seq[Seq[String]]()
 
     withJdbc { connection =>
 
@@ -132,8 +132,9 @@ class DbAccess {
     if (!getTables().contains(tableName)) {
       throw NoSuchTableException(s"Input data does not include table $tableName!")
     }
+    val rows = Map("rows" -> getTopNRows(tableName, n))
 
-    Map("metaData" -> getMetaData(tableName), "rows" -> getTopNRows(tableName, n))
+    getMetaData(tableName) ++ rows
   }
 
   def getVersion(productName: String): String = {

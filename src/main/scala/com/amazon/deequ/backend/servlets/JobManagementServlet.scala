@@ -13,22 +13,6 @@ class JobManagementServlet extends Servlet {
     Ok("jobs" -> jobs)
   }
 
-  get("/:jobId") {
-    try {
-      val jobId = params("jobId")
-      val details = jobManager.getJob(jobId)
-      Ok("job" -> details)
-    } catch errorHandling
-  }
-
-  delete("/:jobId") {
-    try {
-      val jobId = params("jobId")
-      jobManager.deleteJob(jobId)
-      Ok("message" -> "Deleted job")
-    } catch errorHandling
-  }
-
   get("/analyzers") {
     try {
       val analyzers = jobManager.getAvailableAnalyzers
@@ -43,6 +27,22 @@ class JobManagementServlet extends Servlet {
       val response = ("message" -> "Successfully started job") ~
         ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
       Ok(response)
+    } catch errorHandling
+  }
+
+  get("/:jobId") {
+    try {
+      val jobId = params("jobId")
+      val details = jobManager.getJob(jobId)
+      Ok("job" -> details)
+    } catch errorHandling
+  }
+
+  delete("/:jobId") {
+    try {
+      val jobId = params("jobId")
+      jobManager.deleteJob(jobId)
+      Ok("message" -> "Deleted job")
     } catch errorHandling
   }
 
