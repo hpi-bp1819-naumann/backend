@@ -24,9 +24,10 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
       RequestParameter(param.getName, param.getType.getSimpleName))
   }
 
-
   def from(requestParams: JValue): ExecutableAnalyzerJob = {
     var params: Option[T] = None
+
+    val map = requestParams.extract[Map[String, String]]
 
     try {
       val extractedParams = extractFromJson(requestParams)
@@ -49,7 +50,7 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
       case AnalyzerContext.spark => funcWithSpark(params.get)
     }
 
-    ExecutableAnalyzerJob(func)
+    ExecutableAnalyzerJob(name, func, map)
   }
 
   def analyzerWithJdbc[S <: State[_], M <: Metric[_], A <: JdbcAnalyzer[S, M]](analyzer: A, tableName: String): Any = {

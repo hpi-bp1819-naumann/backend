@@ -49,7 +49,9 @@ class JobManagement {
           "status" -> theJob.status.toString,
           "startingTime" -> theJob.startTime,
           "finishingTime" -> theJob.endTime,
-          "result" -> theJob.result
+          "result" -> theJob.result,
+          "name" -> theJob.analyzerName,
+          "params" -> theJob.parameters
       )
       case None =>
         throw new IllegalArgumentException("Job Id is not assigned")
@@ -62,6 +64,7 @@ class JobManagement {
         val status = job.status
         var m = Map[String, Any](
           "id" -> id,
+          "name" -> job.analyzerName,
           "status" -> status.toString)
         m += "startingTime" -> job.startTime
         if (status == JobStatus.completed) {
@@ -95,6 +98,14 @@ class JobManagement {
 
   def getJobStatus(jobId: String): JobStatus.Value = {
     jobs(jobId).status
+  }
+
+  def getErrorMessage(jobId: String): Option[String] = {
+    jobs(jobId).errorMessage
+  }
+
+  def getJobParams(jobId: String): Map[String, String] = {
+    jobs(jobId).parameters
   }
 
   def getJobResult(jobId: String): Any = {
