@@ -1,6 +1,6 @@
 package com.amazon.deequ.backend.servlets
 
-import com.amazon.deequ.backend.jobmanagement.JobManagement
+import com.amazon.deequ.backend.jobmanagement.{JobManagement, JobStatus}
 import org.json4s.JsonDSL._
 import org.scalatra._
 
@@ -50,7 +50,12 @@ class JobManagementServlet extends Servlet {
     try {
       val jobId = params("jobId")
       val status = jobManager.getJobStatus(jobId)
-      val response = ("jobId" -> jobId) ~ ("status" -> status.toString)
+      var response = ("jobId" -> jobId) ~ ("status" -> status.toString)
+
+      response = status match {
+        case JobStatus.error => response ~ ("message" -> jobManager.getErrorMessage(jobId).get)
+      }
+
       Ok(response)
     } catch errorHandling
   }

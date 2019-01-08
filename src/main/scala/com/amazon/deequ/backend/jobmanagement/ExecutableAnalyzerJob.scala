@@ -6,17 +6,26 @@ case class ExecutableAnalyzerJob(analyzerName: String, analyzerFunc: () => Any, 
   var result: Any = None
   var startTime: Long = _
   var endTime: Long = _
+  var errorMessage: Option[String] = None
 
   def run(): Unit = {
     status = JobStatus.running
     startTime = System.currentTimeMillis()
 
-    result = analyzerFunc()
+    try {
+      result = analyzerFunc()
+      status = JobStatus.completed
+    }
+    catch {
+      case e: JobManagementRuntimeException =>
+        status = JobStatus.error
+        errorMessage = Some(e.getMessage)
+    }
+
     endTime = System.currentTimeMillis()
-    status = JobStatus.completed
   }
 }
 
 object JobStatus extends Enumeration {
-  val ready, running, completed = Value
+  val ready, running, completed, error = Value
 }
