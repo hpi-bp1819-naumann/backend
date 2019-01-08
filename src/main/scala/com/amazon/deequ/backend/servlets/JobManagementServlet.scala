@@ -29,6 +29,23 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
+  get("/analyzers") {
+    try {
+      val analyzers = jobManager.getAvailableAnalyzers
+      Ok("analyzers" -> analyzers)
+    } catch errorHandling
+  }
+
+  post("/:analyzer/start") {
+    try {
+      val analyzer = params("analyzer")
+      val jobId = jobManager.startJob(analyzer, parsedBody)
+      val response = ("message" -> "Successfully started job") ~
+        ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
+      Ok(response)
+    } catch errorHandling
+  }
+  
   get("/:jobId/status") {
     try {
       val jobId = params("jobId")
@@ -70,20 +87,4 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
-  get("/analyzers") {
-    try {
-      val analyzers = jobManager.getAvailableAnalyzers
-      Ok("analyzers" -> analyzers)
-    } catch errorHandling
-  }
-
-  post("/:analyzer/start") {
-    try {
-      val analyzer = params("analyzer")
-      val jobId = jobManager.startJob(analyzer, parsedBody)
-      val response = ("message" -> "Successfully started job") ~
-        ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
-      Ok(response)
-    } catch errorHandling
-  }
 }
