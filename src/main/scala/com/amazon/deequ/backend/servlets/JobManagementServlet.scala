@@ -55,6 +55,15 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
+  get("/:jobId/params") {
+    try {
+      val jobId = params("jobId")
+      val jobParams = jobManager.getJobParams(jobId)
+      val response = ("jobId" -> jobId) ~ ("params" -> jobParams)
+      Ok(response)
+    } catch errorHandling
+  }
+
   get("/:jobId/result") {
     try {
       val jobId = params("jobId")
