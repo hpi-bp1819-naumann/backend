@@ -65,8 +65,9 @@ class JobManagementServlet extends Servlet {
       val status = jobManager.getJobStatus(jobId)
       var response = ("jobId" -> jobId) ~ ("status" -> status.toString)
 
-      response = status match {
-        case JobStatus.error => response ~ ("message" -> jobManager.getErrorMessage(jobId).get)
+
+      if (status == JobStatus.error) {
+        response ~= ("message" -> jobManager.getErrorMessage(jobId).get)
       }
 
       Ok(response)

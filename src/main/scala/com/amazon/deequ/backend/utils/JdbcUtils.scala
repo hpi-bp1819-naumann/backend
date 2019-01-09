@@ -6,7 +6,6 @@ import java.util.Properties
 
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerRuntimeException, SQLConnectionException}
 import org.apache.spark.sql.SparkSession
-import org.postgresql.util.PSQLException
 
 import scala.io.Source
 
@@ -35,11 +34,11 @@ object JdbcUtils {
       connection = Some(DriverManager.getConnection(jdbcUrl, connectionProperties()))
       func(connection.get)
     } catch {
-      case e: PSQLException =>
+      case e: ConnectException =>
         throw new SQLConnectionException(
-          s"Could not establish a connection to the specified SQL Server.")
-      case _ =>
-        throw new AnalyzerRuntimeException(s"Error while executing Analyzer job.")
+          s"Could not establish a connection to the specified SQL Server")
+      case e: Exception =>
+        throw new AnalyzerRuntimeException(s"Error while executing Analyzer job")
     }
     finally {
       if (connection.isDefined)
