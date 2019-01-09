@@ -13,6 +13,19 @@ class JobManagementServlet extends Servlet {
     Ok("jobs" -> jobs)
   }
 
+  delete("/") {
+    try {
+      val jobs = jobManager.getJobs
+      for (j <- jobs) {
+        val jobId = j("id").toString()
+        if (j("status") == "finished"){
+          jobManager.deleteJob(jobId)
+        }
+      }
+      Ok("message" -> "Deleted all finished jobs")
+    } catch errorHandling
+  }
+
   get("/:jobId") {
     try {
       val jobId = params("jobId")
@@ -45,7 +58,7 @@ class JobManagementServlet extends Servlet {
       Ok(response)
     } catch errorHandling
   }
-  
+
   get("/:jobId/status") {
     try {
       val jobId = params("jobId")
