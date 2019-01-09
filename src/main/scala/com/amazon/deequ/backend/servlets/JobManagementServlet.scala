@@ -18,7 +18,7 @@ class JobManagementServlet extends Servlet {
       val jobs = jobManager.getJobs
       for (j <- jobs) {
         val jobId = j("id").toString
-        if (j("status") == "completed"){
+        if (j("status") == "completed" || j("status") == "error"){
           jobManager.deleteJob(jobId)
         }
       }
