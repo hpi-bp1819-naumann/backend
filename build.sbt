@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "org.eclipse.jetty" % "jetty-servlet" % "9.2.15.v20160210" % "container;provided",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
   "com.sun.jersey" % "jersey-server" % "1.19.4",
-  "org.mariadb.jdbc" % "mariadb-java-client" % "2.3.0"
+  "org.mariadb.jdbc" % "mariadb-java-client" % "2.3.0",
+  "com.microsoft.sqlserver" % "mssql-jdbc" % "7.0.0.jre8"
 )
 
 unmanagedBase := baseDirectory.value / "lib"
