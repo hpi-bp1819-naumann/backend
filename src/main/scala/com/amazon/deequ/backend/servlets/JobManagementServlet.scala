@@ -59,6 +59,15 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
+  post("/:jobId/cancel") {
+    try {
+      val jobId = params("jobId")
+      jobManager.cancelJob(jobId)
+      val response = "message" -> "Successfully canceled job"
+      Ok(response)
+    } catch errorHandling
+  }
+
   get("/:jobId/status") {
     try {
       val jobId = params("jobId")

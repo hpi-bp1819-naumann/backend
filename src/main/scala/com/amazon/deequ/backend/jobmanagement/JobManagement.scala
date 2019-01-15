@@ -86,14 +86,31 @@ class JobManagement {
 
     val analyzer = availableAnalyzers(requestedAnalyzer)
 
-    jobs += (jobId -> analyzer.from(params))
-    new Thread(jobs(jobId)).start()
+    val job = analyzer.from(params)
+    jobs += (jobId -> job)
+    job.start()
 
     jobId
   }
 
   def deleteJob(jobId: String): Unit = {
     jobs -= jobId
+  }
+
+  def cancelJob(jobId: String): Unit = {
+    val job = Option(jobs(jobId))
+    job match {
+      case Some(theJob) =>
+        theJob.status match {
+          case JobStatus.running =>
+            theJob.cancel()
+            deleteJob(jobId)
+          case _ =>
+            throw new IllegalArgumentException("The job is not running and can therefore not be canceled")
+        }
+      case None =>
+        throw new IllegalArgumentException("Job Id is not assigned")
+    }
   }
 
   def getJobStatus(jobId: String): JobStatus.Value = {
