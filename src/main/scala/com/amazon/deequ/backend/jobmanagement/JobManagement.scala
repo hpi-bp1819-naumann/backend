@@ -9,7 +9,7 @@ import scala.collection.immutable.ListMap
 
 class JobManagement {
 
-  private var jobs = Map[String, ExecutableAnalyzerJob]()
+  private var jobs = synchronized(Map[String, ExecutableAnalyzerJob]())
 
   private val availableAnalyzers = ListMap[String, AnalyzerJob[_]](
     "completeness" -> CompletenessAnalyzerJob,
