@@ -40,7 +40,7 @@ class DBSettingsServlet extends Servlet {
   post("/password") {
     try {
       val params = parsedBody.extract[Map[String, String]]
-      val pass = params("pass")
+      val pass = params("password")
       DbSettings.dbpass(pass)
       val response = "message" -> "Successfully changed Password"
       Ok(response)
