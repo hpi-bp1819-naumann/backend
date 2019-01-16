@@ -28,10 +28,9 @@ object UniquenessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
       Uniqueness(params.columns), params.table)
   }
 
-  def parseQuery(params: Map[String, String]): String = {
+  def parseQuery(params: Map[String, Any]): String = {
     val tableName = params("table")
-    // TODO: add multi column here
-    val columns = Seq[String](params("column"))
+    val columns = params("columns").asInstanceOf[Seq[String]]
     val select = columns.mkString("", " , ", "")
     val where = columns.mkString("", " is not null and ", " is not null")
 

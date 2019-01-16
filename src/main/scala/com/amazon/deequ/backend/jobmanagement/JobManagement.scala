@@ -55,9 +55,9 @@ class JobManagement {
         )
         theJob.analyzerName match {
           case "Uniqueness" | "UniqueValueRatio" =>
-//            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
+            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
           case "Distinctness" | "CountDistinct"  =>
-//            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
+            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
           case _ =>
         }
         response

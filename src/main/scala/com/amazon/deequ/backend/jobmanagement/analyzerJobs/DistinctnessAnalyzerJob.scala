@@ -28,10 +28,9 @@ object DistinctnessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
       Distinctness(params.columns), params.table)
   }
 
-  def parseQuery(params: Map[String, String]): String = {
-    val tableName = params("table")
-    // TODO: add multi column here
-    val columns = Seq[String](params("column"))
+  def parseQuery(params: Map[String, Any]): String = {
+    val tableName = params("table").toString
+    val columns = params("columns").asInstanceOf[Seq[String]]
     val select = columns.mkString("", " , ", "")
     val where = columns.mkString("", " is not null and ", " is not null")
 
