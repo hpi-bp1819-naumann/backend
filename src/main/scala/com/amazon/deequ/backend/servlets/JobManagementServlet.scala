@@ -87,7 +87,7 @@ class JobManagementServlet extends Servlet {
     try {
       val jobId = params("jobId")
       val jobParams = jobManager.getJobParams(jobId)
-      val response = ("jobId" -> jobId) ~ ("params" -> jobParams)
+      val response = Map[String, Any]("jobId" -> jobId, "params" -> jobParams)
       Ok(response)
     } catch errorHandling
   }
