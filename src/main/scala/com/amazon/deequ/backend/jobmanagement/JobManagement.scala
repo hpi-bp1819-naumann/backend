@@ -129,7 +129,7 @@ class JobManagement {
     jobs(jobId).errorMessage
   }
 
-  def getJobParams(jobId: String): Map[String, String] = {
+  def getJobParams(jobId: String): Map[String, Any] = {
     jobs(jobId).parameters
   }
 

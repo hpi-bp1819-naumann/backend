@@ -27,7 +27,7 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
   def from(requestParams: JValue): ExecutableAnalyzerJob = {
     var params: Option[T] = None
 
-    val map = requestParams.extract[Map[String, String]]
+    val map = requestParams.extract[Map[String, Any]]
 
     try {
       val extractedParams = extractFromJson(requestParams)
