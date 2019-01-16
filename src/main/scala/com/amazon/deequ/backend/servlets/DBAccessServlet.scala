@@ -1,6 +1,6 @@
 package com.amazon.deequ.backend.servlets
 
-import com.amazon.deequ.backend.dbAccess.DbAccess
+import com.amazon.deequ.backend.dbAccess.{DbAccess, Query}
 import org.json4s.JsonDSL._
 import org.json4s.jackson.Serialization
 import org.scalatra.Ok
@@ -8,6 +8,15 @@ import org.scalatra.Ok
 class DBAccessServlet extends Servlet {
 
   val dbAccess = new DbAccess
+
+  post("/query") {
+    try {
+      val query = parsedBody.extract[Query]
+      val result = dbAccess.executeQuery(query.query)
+      val response = "result" -> result
+      Ok(response)
+    } catch errorHandling
+  }
 
   get("/tables") {
     val tables = dbAccess.getTables()
