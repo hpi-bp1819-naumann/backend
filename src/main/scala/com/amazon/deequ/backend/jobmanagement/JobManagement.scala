@@ -45,14 +45,22 @@ class JobManagement {
     val job = Option(jobs(jobId))
     job match {
       case Some(theJob) =>
-        Map[String, Any]("id" -> jobId,
+        var response = Map[String, Any]("id" -> jobId,
           "status" -> theJob.status.toString,
           "startingTime" -> theJob.startTime,
           "finishingTime" -> theJob.endTime,
           "result" -> theJob.result,
           "name" -> theJob.analyzerName,
           "params" -> theJob.parameters
-      )
+        )
+        theJob.analyzerName match {
+          case "Uniqueness" | "UniqueValueRatio" =>
+            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
+          case "Distinctness" | "CountDistinct"  =>
+            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
+          case _ =>
+        }
+        response
       case None =>
         throw new IllegalArgumentException("Job Id is not assigned")
     }
@@ -140,10 +148,13 @@ trait AnalyzerParams {
   val table: String
 }
 
-case class ColumnAnalyzerParams(context: String, table: String, var column: String)
+case class ColumnAnalyzerParams(context: String, table: String, column: String)
   extends AnalyzerParams
 
 case class ColumnAndWhereAnalyzerParams(context: String, table: String,
-                                        var column: String,
-                                        var where: Option[String] = None)
+                                        column: String,
+                                        where: Option[String] = None)
+  extends AnalyzerParams
+
+case class MultiColumnAnalyzerParams(context: String, table: String, columns: Seq[String])
   extends AnalyzerParams
