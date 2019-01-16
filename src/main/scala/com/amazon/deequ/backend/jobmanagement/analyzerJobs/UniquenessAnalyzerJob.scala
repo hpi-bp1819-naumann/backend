@@ -12,7 +12,7 @@ object UniquenessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
   val description = "description for uniqueness analyzer"
 
   val acceptedRequestParams: () => Array[RequestParameter] =
-    () => extractFieldNames[ColumnAndWhereAnalyzerParams]
+    () => extractFieldNames[ColumnAnalyzerParams]
 
   def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
     requestParams.extract[ColumnAnalyzerParams]
