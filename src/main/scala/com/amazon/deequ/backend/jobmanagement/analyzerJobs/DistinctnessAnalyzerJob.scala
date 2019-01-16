@@ -27,4 +27,22 @@ object DistinctnessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Distinctness](
       Distinctness(params.column), params.table)
   }
+
+  def parseQuery(params: Map[String, String]): String = {
+    val tableName = params("table")
+    // TODO: add multi column here
+    val columns = Seq[String](params("column"))
+    val select = columns.mkString("", " , ", "")
+    val where = columns.mkString("", " is not null and ", " is not null")
+
+    s"""
+       |SELECT
+       | DISTINCT
+       |  $select
+       |FROM
+       | $tableName
+       |WHERE
+       | $where
+    """.stripMargin
+  }
 }
