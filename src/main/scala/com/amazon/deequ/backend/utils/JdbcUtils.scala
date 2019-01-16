@@ -4,6 +4,7 @@ import java.net.ConnectException
 import java.sql.{Connection, DriverManager, SQLException}
 import java.util.Properties
 
+import com.amazon.deequ.backend.DbSettings.DbSettings
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerRuntimeException, SQLConnectionException}
 import org.apache.spark.sql.SparkSession
 
@@ -11,20 +12,10 @@ import scala.io.Source
 
 object JdbcUtils {
 
-  val jdbcUrl = "jdbc:postgresql://localhost:5432/food"
+  val jdbcUrl = DbSettings.dburi
 
   def connectionProperties(): Properties = {
-
-    val url = getClass.getResource("/jdbc.properties")
-
-    if (url == null) {
-      throw new IllegalStateException("Unable to find jdbc.properties in src/main/resources!")
-    }
-
-    val properties = new Properties()
-    properties.load(Source.fromURL(url).bufferedReader())
-
-    properties
+    DbSettings.connectionProperties
   }
 
   def withJdbc(func: Connection => Unit): Unit = {

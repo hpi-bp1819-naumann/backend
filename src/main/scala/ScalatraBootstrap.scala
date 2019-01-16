@@ -8,5 +8,6 @@ class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext) {
     context mount (new JobManagementServlet(), "/api/jobs/*")
     context mount (new DBAccessServlet(), "/api/db/*")
+    context mount (new DBSettingsServlet(), "/api/settings/*")
   }
 }
