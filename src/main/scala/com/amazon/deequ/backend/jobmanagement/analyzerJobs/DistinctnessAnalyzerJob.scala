@@ -37,12 +37,13 @@ object DistinctnessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
     s"""
        |SELECT
-       | DISTINCT
-       |  $select
+       | $select, count(*) as cnt
        |FROM
        | $tableName
        |WHERE
        | $where
+       |GROUP BY
+       | $select
     """.stripMargin
   }
 }

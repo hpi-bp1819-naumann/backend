@@ -54,7 +54,8 @@ class JobManagement {
           "params" -> theJob.parameters
         )
         theJob.analyzerName match {
-          case "Uniqueness" | "UniqueValueRatio" => response += ("query" -> "SELECT fat_factor FROM food_des")
+          case "Uniqueness" | "UniqueValueRatio" =>
+            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
           case "Distinctness" | "CountDistinct"  =>
             response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
           case _ =>
