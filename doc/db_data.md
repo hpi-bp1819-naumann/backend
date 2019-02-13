@@ -1,4 +1,4 @@
-# Headline
+# Metadata
 Get each table name with all column names with their datatypes
  
 __URL:__ `/api/db/data/`

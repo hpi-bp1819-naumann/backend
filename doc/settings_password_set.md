@@ -1,5 +1,5 @@
-# Headline
-set database password
+# Set Password
+Set database password
 
 __URL:__ `/api/settings/password`
 __Method:__ `POST`

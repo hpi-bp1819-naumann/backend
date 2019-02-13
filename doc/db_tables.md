@@ -1,4 +1,4 @@
-# Headline
+# List Tables
 Get the names of all tables
  
 __URL:__ `/api/db/tables/`

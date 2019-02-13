@@ -1,4 +1,4 @@
-# Headline
+# Table Metadata + 10 rows
 Get for a specific table name all column names with their datatypes and exemplary the first 10 rows of the table
 
 __URL:__ `/api/db/data/:table`

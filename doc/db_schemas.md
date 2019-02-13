@@ -1,4 +1,4 @@
-# Headline
+# List schemas
 Get the names of all schemas
  
 __URL:__ `/api/db/schemas/`

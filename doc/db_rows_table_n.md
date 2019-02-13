@@ -1,5 +1,5 @@
-# Headline
-get exemplary the first n rows of the table
+# List n rows
+Get exemplary the first n rows of the table
 
 __URL:__ `/api/db/rows/:table/:n`
 __Method:__ `GET`  

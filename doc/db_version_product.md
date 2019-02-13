@@ -1,4 +1,4 @@
-# Headline
+# Get db version
 Get the version number of the used product
 
 __URL:__ `/api/db/version/:product`
