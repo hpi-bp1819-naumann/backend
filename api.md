@@ -37,14 +37,13 @@
 ```
 
 ### Database Access
-* GET `/api/db/tables`: get the names of all tables 
-* GET `/api/db/columns`: get the names of all columns of all tables
-* GET `/api/db/schemas`: get the names of all schemas
-* GET `/api/db/data`: get each table name with all column names with their datatypes
-* GET `/api/db/data/:table`: get for a specific table name all column names with their datatypes and exemplary the first 10 rows of the table
-* GET `/api/db/rows/:table`: get exemplary the first 10 rows of the table
-* GET `/api/db/rows/:table/:n`: get exemplary the first n rows of the table
-* GET `/api/db/version/:product`: get the version number of the used product, accepted product names are "jdbc" for the jdbc driver version and "db" for the database name and version number
-               
+* [List tables](./doc/db_tables.md) `GET /api/db/tables`
+* [List columns](./doc/db_columns.md) `GET /api/db/columns`
+* [List schemas](./doc/db_schemas.md) `GET /api/db/schemas`
+* [Metadata](./doc/db_data.md) `GET /api/db/data`
+* [Table Metadata + 10 rows](./doc/db_data_table.md) `GET /api/db/data/:table`
+* [List 10 rows](./doc/db_rows_table.md) `GET /api/db/rows/:table`
+* [List n rows](./doc/db_rows_table_n.md) `GET /api/db/rows/:table/:n`
+* [Get db version:](./doc/db_version_product.md) `GET /api/db/version/:product` 
 
                
