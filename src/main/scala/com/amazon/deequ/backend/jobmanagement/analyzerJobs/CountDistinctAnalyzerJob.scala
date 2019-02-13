@@ -9,7 +9,7 @@ import org.json4s.JValue
 object CountDistinctAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
 
   val name = "CountDistinct"
-  val description = "description for count distinct analyzer"
+  val description = "Number of distinct values in the column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[MultiColumnAnalyzerParams]

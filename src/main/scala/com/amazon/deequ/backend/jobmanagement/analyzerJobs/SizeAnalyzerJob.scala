@@ -9,7 +9,7 @@ import org.json4s.JValue
 object SizeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Size"
-  val description = "The Size analyzer computes the size of a given table"
+  val description = "Is the amount of values in the given column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

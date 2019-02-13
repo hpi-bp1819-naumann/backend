@@ -14,7 +14,7 @@ case class CorrelationAnalyzerParams(context: String, table: String,
 object CorrelationAnalyzerJob extends AnalyzerJob[CorrelationAnalyzerParams] {
 
   val name = "Correlation"
-  val description = "description for correlation analyzer"
+  val description = "Pearson correlation coefficient between the two given columns"
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[CorrelationAnalyzerParams]

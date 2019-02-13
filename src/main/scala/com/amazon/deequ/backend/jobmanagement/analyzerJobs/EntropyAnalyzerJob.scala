@@ -9,7 +9,7 @@ import org.json4s.JValue
 object EntropyAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
   val name = "Entropy"
-  val description = "description for entropy analyzer"
+  val description = "Entropy is a measure of the level of information contained in a message."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAnalyzerParams]

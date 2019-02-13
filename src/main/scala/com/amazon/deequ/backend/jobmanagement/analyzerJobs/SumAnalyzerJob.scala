@@ -9,7 +9,7 @@ import org.json4s.JValue
 object SumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Sum"
-  val description = "The Sum analyzer calculates the sum of a given column."
+  val description = "The sum of all values in the given column. Only for numeric columns."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

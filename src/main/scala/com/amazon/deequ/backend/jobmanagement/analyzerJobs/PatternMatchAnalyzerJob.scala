@@ -16,7 +16,7 @@ case class PatternMatchAnalyzerParams(context: String, table: String,
 object PatternMatchAnalyzerJob extends AnalyzerJob[PatternMatchAnalyzerParams] {
 
   val name = "PatternMatch"
-  val description = "description for patternMatch analyzer"
+  val description = "Gives the fraction of values that match a certain regex constraint divided by all values in the given column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[PatternMatchAnalyzerParams]

@@ -9,7 +9,7 @@ import org.json4s.JValue
 object UniquenessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
 
   val name = "Uniqueness"
-  val description = "description for uniqueness analyzer"
+  val description = "Gives the fraction of values of the given column that only appear once in the whole column divided by the Size of the column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[MultiColumnAnalyzerParams]

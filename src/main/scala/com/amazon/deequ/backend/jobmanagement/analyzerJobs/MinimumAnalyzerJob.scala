@@ -9,7 +9,7 @@ import org.json4s.JValue
 object MinimumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Minimum"
-  val description = "The Minimum analyzer calculates the minimum of a given column."
+  val description = "Returns the smallest value in the given column. Only for numeric columns."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

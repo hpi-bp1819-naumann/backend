@@ -9,7 +9,7 @@ import org.json4s.JValue
 object MeanAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Mean"
-  val description = "The Mean analyzer calculates the mean of a given column."
+  val description = " This is the average over all values of the given column. Only for numeric columns."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

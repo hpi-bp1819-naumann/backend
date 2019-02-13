@@ -9,7 +9,7 @@ import org.json4s.JValue
 object CompletenessAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Completeness"
-  val description = "description for completeness analyzer"
+  val description = "Completeness is the fraction of the number of non-null values devided by the number of all values in a column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]
