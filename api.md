@@ -11,14 +11,11 @@
  After starting the Frontend you can interact with it using the following API calls:
 
  ### Job Management
-* GET `/api/jobs/analyzers`: get a list of all available analyzers
-* POST `/api/jobs/:analyzer/start`: start a job for a specific analyzer <br> the body has to look like this:
-```
-{"context": "<jdbc or spark>", "table": "<tablename>", "column": "<columnname>"}
-```
-* GET `/api/jobs/`: get all existing jobs
-* GET `/api/jobs/:jobId`: get status, startingTime, finishingTime and result of a specific job
-* DELETE `/api/jobs/:jobId`: delete a specific job
+* [List Analyzers:](./doc/analyzers.md) `GET /api/jobs/analyzers`
+* [Start Analyzer:](./doc/analyzer_start.md) `POST /api/jobs/:analyzer/start`
+* [List Jobs:](./doc/jobs.md) `GET /api/jobs/`
+* [Job information:](./doc/job_information.md) `GET /api/jobs/:jobId`
+* [Delete Job:](./doc/job_delete.md) `DELETE /api/jobs/:jobId`
 * GET `/api/jobs/:jobID/status`: get status of a specific job 
 * GET `/api/jobs/:jobID/result`: get result of a specific job
 * GET `/api/jobs/:jobID/runtime`: get the difference between finishing and start time of a specific job
