@@ -2,7 +2,7 @@
 Start a job for a specific analyzer
 
 __URL:__ `/api/jobs/:analyzer/start`  
-__Method:__ `POSt`  
+__Method:__ `POST`  
 
 __Data constraints__
 ```
