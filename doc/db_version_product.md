@@ -1,5 +1,5 @@
 # Headline
-Get the version number of the used product, accepted product names are "jdbc" for the jdbc driver version and "db" for the database name and version number
+Get the version number of the used product
 
 __URL:__ `/api/db/version/:product`
 __Method:__ `GET`  

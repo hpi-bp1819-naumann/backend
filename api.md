@@ -27,14 +27,8 @@
 {"uri": "<uri>"}
 ```
 * GET `/api/settings/user`: get database user
-* POST `/api/settings/user`: set database user, the body has to look like this:
-```
-{"user": "<USERNAME>"}
-```
-* POST `/api/settings/password`: set database password, the body has to look like this:
-```
-{"password": "<PASSWORD>"}
-```
+* [Change User](./doc/settings_user_set.md) `POST /api/settings/user`
+* [Change Password](./doc/settings_password.md) `POST /api/settings/password`
 
 ### Database Access
 * [List tables](./doc/db_tables.md) `GET /api/db/tables`
