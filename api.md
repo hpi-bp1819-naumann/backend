@@ -16,13 +16,13 @@
 * [List Jobs:](./doc/jobs.md) `GET /api/jobs/`
 * [Job information:](./doc/job_information.md) `GET /api/jobs/:jobId`
 * [Delete Job:](./doc/job_delete.md) `DELETE /api/jobs/:jobId`
-* GET `/api/jobs/:jobID/status`: get status of a specific job 
-* GET `/api/jobs/:jobID/result`: get result of a specific job
-* GET `/api/jobs/:jobID/runtime`: get the difference between finishing and start time of a specific job
+* [Job status:](./doc/job_status.md) `GET /api/jobs/:jobID/status`
+* [Job result:](./doc/job_result.md) `GET /api/jobs/:jobID/result`
+* [Job runtime:](./doc/job_runtime.md) `GET /api/jobs/:jobID/runtime`
 
 ### Database Settings
-* GET `/api/settings/uri`: get database uri
-* POST `/api/settings/uri`: set database uri, the body has to look like this:
+* [Get Database URI:](./doc/dburi_get.md) `GET /api/settings/uri`
+* [Set Database URI:](./doc/dburi_set.md) `POST /api/settings/uri`: set database uri, the body has to look like this:
 ```
 {"uri": "<uri>"}
 ```
