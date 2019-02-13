@@ -6,25 +6,46 @@ import com.amazon.deequ.backend.jobmanagement._
 import com.amazon.deequ.metrics.DoubleMetric
 import org.json4s.JValue
 
-object UniquenessAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
+object UniquenessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
 
   val name = "Uniqueness"
   val description = "description for uniqueness analyzer"
 
   val acceptedRequestParams: () => Array[RequestParameter] =
-    () => extractFieldNames[ColumnAndWhereAnalyzerParams]
+    () => extractFieldNames[MultiColumnAnalyzerParams]
 
-  def extractFromJson(requestParams: JValue): ColumnAnalyzerParams = {
-    requestParams.extract[ColumnAnalyzerParams]
+  def extractFromJson(requestParams: JValue): MultiColumnAnalyzerParams = {
+    requestParams.extract[MultiColumnAnalyzerParams]
   }
 
-  def funcWithJdbc(params: ColumnAnalyzerParams): Any = {
+  def funcWithJdbc(params: MultiColumnAnalyzerParams): Any = {
     analyzerWithJdbc[JdbcFrequenciesAndNumRows, DoubleMetric, JdbcUniqueness](
-      JdbcUniqueness(params.column), params.table)
+      JdbcUniqueness(params.columns), params.table)
   }
 
-  def funcWithSpark(params: ColumnAnalyzerParams) {
+  def funcWithSpark(params: MultiColumnAnalyzerParams) {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Uniqueness](
-      Uniqueness(params.column), params.table)
+      Uniqueness(params.columns), params.table)
+  }
+
+  def parseQuery(params: Map[String, Any]): String = {
+    val tableName = params("table")
+    val columns = params("columns").asInstanceOf[Seq[String]]
+    val select = columns.mkString("", " , ", "")
+    val where = columns.mkString("", " is not null and ", " is not null")
+
+    s"""
+       |SELECT $select FROM (
+       | SELECT
+       |  $select, count(*) as cnt
+       |	FROM
+       |   $tableName
+       |	WHERE
+       |   $where
+       |	GROUP BY
+       |   $select
+       | ) as GROUPING
+       |WHERE cnt = 1
+    """.stripMargin
   }
 }

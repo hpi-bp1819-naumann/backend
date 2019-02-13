@@ -10,6 +10,35 @@ class DbAccess {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
+  def executeQuery(query: String): QueryResult = {
+    var columns = Seq[String]()
+    var data = Seq[Seq[String]]()
+    withJdbc { connection =>
+      val statement = connection.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY,
+        ResultSet.CONCUR_READ_ONLY)
+      val rs = statement.executeQuery()
+      val metaData = rs.getMetaData
+
+      val columnCount = metaData.getColumnCount
+
+      columns = (1 to columnCount).map(i => metaData.getColumnName(i))
+
+      while (rs.next) {
+        data ++= Seq[Seq[String]]((1 to columnCount).map(
+          i => {
+            val columnValue = Option(rs.getObject(i))
+            columnValue match {
+              case Some(theColumnValue) =>
+                theColumnValue.toString
+              case None =>
+                "null"
+          }
+        }))
+      }
+    }
+    QueryResult(columns, data)
+  }
+
   def getTables(): List[String] = {
     var tables = List[String]()
     withJdbc { connection =>
@@ -154,3 +183,7 @@ class DbAccess {
     version
   }
 }
+
+case class Query(query: String)
+
+case class QueryResult(columns: Seq[String], data: Seq[Seq[String]])

@@ -13,6 +13,19 @@ class JobManagementServlet extends Servlet {
     Ok("jobs" -> jobs)
   }
 
+  delete("/") {
+    try {
+      val jobs = jobManager.getJobs
+      for (j <- jobs) {
+        val jobId = j("id").toString
+        if (j("status") == "completed" || j("status") == "error"){
+          jobManager.deleteJob(jobId)
+        }
+      }
+      Ok("message" -> "Deleted all finished jobs")
+    } catch errorHandling
+  }
+
   get("/:jobId") {
     try {
       val jobId = params("jobId")
@@ -45,7 +58,16 @@ class JobManagementServlet extends Servlet {
       Ok(response)
     } catch errorHandling
   }
-  
+
+  post("/:jobId/cancel") {
+    try {
+      val jobId = params("jobId")
+      jobManager.cancelJob(jobId)
+      val response = "message" -> "Successfully canceled job"
+      Ok(response)
+    } catch errorHandling
+  }
+
   get("/:jobId/status") {
     try {
       val jobId = params("jobId")
@@ -65,7 +87,7 @@ class JobManagementServlet extends Servlet {
     try {
       val jobId = params("jobId")
       val jobParams = jobManager.getJobParams(jobId)
-      val response = ("jobId" -> jobId) ~ ("params" -> jobParams)
+      val response = Map[String, Any]("jobId" -> jobId, "params" -> jobParams)
       Ok(response)
     } catch errorHandling
   }

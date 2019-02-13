@@ -9,7 +9,7 @@ import scala.collection.immutable.ListMap
 
 class JobManagement {
 
-  private var jobs = Map[String, ExecutableAnalyzerJob]()
+  private var jobs = synchronized(Map[String, ExecutableAnalyzerJob]())
 
   private val availableAnalyzers = ListMap[String, AnalyzerJob[_]](
     "completeness" -> CompletenessAnalyzerJob,
@@ -45,14 +45,22 @@ class JobManagement {
     val job = Option(jobs(jobId))
     job match {
       case Some(theJob) =>
-        Map[String, Any]("id" -> jobId,
+        var response = Map[String, Any]("id" -> jobId,
           "status" -> theJob.status.toString,
           "startingTime" -> theJob.startTime,
           "finishingTime" -> theJob.endTime,
           "result" -> theJob.result,
           "name" -> theJob.analyzerName,
           "params" -> theJob.parameters
-      )
+        )
+        theJob.analyzerName match {
+          case "Uniqueness" | "UniqueValueRatio" =>
+            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
+          case "Distinctness" | "CountDistinct"  =>
+            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
+          case _ =>
+        }
+        response
       case None =>
         throw new IllegalArgumentException("Job Id is not assigned")
     }
@@ -86,14 +94,31 @@ class JobManagement {
 
     val analyzer = availableAnalyzers(requestedAnalyzer)
 
-    jobs += (jobId -> analyzer.from(params))
-    new Thread(jobs(jobId)).start()
+    val job = analyzer.from(params)
+    jobs += (jobId -> job)
+    job.start()
 
     jobId
   }
 
   def deleteJob(jobId: String): Unit = {
     jobs -= jobId
+  }
+
+  def cancelJob(jobId: String): Unit = {
+    val job = Option(jobs(jobId))
+    job match {
+      case Some(theJob) =>
+        theJob.status match {
+          case JobStatus.running =>
+            theJob.cancel()
+            deleteJob(jobId)
+          case _ =>
+            throw new IllegalArgumentException("The job is not running and can therefore not be canceled")
+        }
+      case None =>
+        throw new IllegalArgumentException("Job Id is not assigned")
+    }
   }
 
   def getJobStatus(jobId: String): JobStatus.Value = {
@@ -104,7 +129,7 @@ class JobManagement {
     jobs(jobId).errorMessage
   }
 
-  def getJobParams(jobId: String): Map[String, String] = {
+  def getJobParams(jobId: String): Map[String, Any] = {
     jobs(jobId).parameters
   }
 
@@ -123,10 +148,13 @@ trait AnalyzerParams {
   val table: String
 }
 
-case class ColumnAnalyzerParams(context: String, table: String, var column: String)
+case class ColumnAnalyzerParams(context: String, table: String, column: String)
   extends AnalyzerParams
 
 case class ColumnAndWhereAnalyzerParams(context: String, table: String,
-                                        var column: String,
-                                        var where: Option[String] = None)
+                                        column: String,
+                                        where: Option[String] = None)
+  extends AnalyzerParams
+
+case class MultiColumnAnalyzerParams(context: String, table: String, columns: Seq[String])
   extends AnalyzerParams
