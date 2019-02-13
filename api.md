@@ -21,14 +21,11 @@
 * [Job runtime:](./doc/job_runtime.md) `GET /api/jobs/:jobID/runtime`
 
 ### Database Settings
-* [Get Database URI:](./doc/dburi_get.md) `GET /api/settings/uri`
-* [Set Database URI:](./doc/dburi_set.md) `POST /api/settings/uri`: set database uri, the body has to look like this:
-```
-{"uri": "<uri>"}
-```
-* GET `/api/settings/user`: get database user
-* [Change User](./doc/settings_user_set.md) `POST /api/settings/user`
-* [Change Password](./doc/settings_password.md) `POST /api/settings/password`
+* [Get URI:](./doc/settings_uri_get.md) `GET /api/settings/uri`
+* [Set URI:](./doc/settings_uri_set.md) `POST /api/settings/uri`
+* [Get User](./doc/settings_user_get.md) `GET /api/settings/user`
+* [Set User](./doc/settings_user_set.md) `POST /api/settings/user`
+* [Set Password](./doc/settings_password_set.md) `POST /api/settings/password`
 
 ### Database Access
 * [List tables](./doc/db_tables.md) `GET /api/db/tables`
