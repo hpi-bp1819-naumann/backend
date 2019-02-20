@@ -25,7 +25,7 @@ The server will then run on `localhost:8080`.
 
 ## Troubleshooting
 
-There should be a /backend/target/scala-2.11/classes/jdbc.properties file, looking like this:
+There should be a `/backend/target/scala-2.11/classes/jdbc.properties` file, looking like this:
 ```
 user=yourname
 password=yourpass
