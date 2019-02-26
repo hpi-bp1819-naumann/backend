@@ -15,19 +15,20 @@ __Content__
 ```
 {
     "job": {
-        "name": "Maximum",
+        "name": "Minimum",
         "result": {
-            "value": 9.04
+            "value": 0.84
         },
         "params": {
             "context": "jdbc",
             "table": "food_des",
-            "column": "fat_factor"
+            "column": "fat_factor",
+            "where": "fat_factor > 0"
         },
-        "id": "80a62f199b2844fabcf63817eb30f25b",
-        "finishingTime": 1550049800514,
+        "id": "5d8bf7f7c4fd42e5a2650c37e7db2853",
+        "finishingTime": 1551186364199,
         "status": "completed",
-        "startingTime": 1550049800229
+        "startingTime": 1551186364164
     }
 }
 ```

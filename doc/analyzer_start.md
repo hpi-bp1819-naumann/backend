@@ -11,7 +11,7 @@ __Data constraints__
 
 __Body constraints__
 ```
-{"context": <"jdbc" or "spark">, "table": <"tablename">, "column": <"columnname">}
+{"context": <"jdbc" or "spark">, "table": <tablename>, "column": <"columnname">, ["where": <condition>]}
 ```
 
 ## Response
