@@ -14,7 +14,7 @@ case class ComplianceAnalyzerParams(context: String, table: String,
 object ComplianceAnalyzerJob extends AnalyzerJob[ComplianceAnalyzerParams] {
 
   val name = "Compliance"
-  val description = "description for compliance analyzer"
+  val description = "Compliance is a measure of the fraction of rows that complies with the given column constraint."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ComplianceAnalyzerParams]

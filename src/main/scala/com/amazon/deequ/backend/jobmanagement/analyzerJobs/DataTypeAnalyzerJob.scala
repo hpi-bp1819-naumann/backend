@@ -9,7 +9,7 @@ import org.json4s.JValue
 object DataTypeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "DataType"
-  val description = "description for dataType analyzer"
+  val description = "Distribution map, including the overall number of values of each datatype and the percentage of each datatype."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

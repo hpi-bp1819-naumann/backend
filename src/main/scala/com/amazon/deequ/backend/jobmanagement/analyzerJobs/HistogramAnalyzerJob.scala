@@ -9,7 +9,7 @@ import org.json4s.JValue
 object HistogramAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
 
   val name = "Histogram"
-  val description = "description for histogram analyzer"
+  val description = "Divides the columns of the values in the given column into a given number of buckets and applies the given function to each bucket."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAnalyzerParams]

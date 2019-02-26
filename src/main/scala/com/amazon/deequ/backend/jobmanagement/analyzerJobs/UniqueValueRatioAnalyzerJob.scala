@@ -9,7 +9,7 @@ import org.json4s.JValue
 object UniqueValueRatioAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
 
   val name = "UniqueValueRatio"
-  val description = "description for uniqueValueRatio analyzer"
+  val description = "The quotient of all unique values divided by all distinct values of the given column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[MultiColumnAnalyzerParams]

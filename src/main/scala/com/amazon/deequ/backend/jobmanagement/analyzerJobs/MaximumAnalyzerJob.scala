@@ -9,7 +9,7 @@ import org.json4s.JValue
 object MaximumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "Maximum"
-  val description = "The Maximum analyzer calculates the maximum of a given column."
+  val description = "Returns the largest value in the given column. Only for numeric columns."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

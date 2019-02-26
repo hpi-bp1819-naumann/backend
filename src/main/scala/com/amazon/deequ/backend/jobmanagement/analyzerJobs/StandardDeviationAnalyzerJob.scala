@@ -9,7 +9,7 @@ import org.json4s.JValue
 object StandardDeviationAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
 
   val name = "StandardDeviation"
-  val description = "description for standardDeviation analyzer"
+  val description = "Quantifies the amount of variation of the values in the given column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[ColumnAndWhereAnalyzerParams]

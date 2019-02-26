@@ -9,7 +9,7 @@ import org.json4s.JValue
 object DistinctnessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
 
   val name = "Distinctness"
-  val description = "description for distinctness analyzer"
+  val description = "Distinctness is the fraction of the number of distinct values devided by the number of all values of a column."
 
   val acceptedRequestParams: () => Array[RequestParameter] =
     () => extractFieldNames[MultiColumnAnalyzerParams]
