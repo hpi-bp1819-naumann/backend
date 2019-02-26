@@ -19,7 +19,7 @@
 ``` bash
 sbt
 # in the sbt shell
-jetty; start
+jetty:start
 ```
 The server will then run on `localhost:8080`.
 
