@@ -6,6 +6,8 @@ import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, 
 import com.amazon.deequ.metrics.Metric
 import org.json4s.{DefaultFormats, Formats, JValue}
 
+import scala.util.Failure
+
 
 abstract class AnalyzerJob[T <: AnalyzerParams] {
 
@@ -56,7 +58,8 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
   def analyzerWithJdbc[S <: State[_], M <: Metric[_], A <: JdbcAnalyzer[S, M]](analyzer: A, tableName: String): Any = {
     withJdbc { connection =>
       val table = Table(tableName, connection)
-      return analyzer.calculate(table).value
+      val calc = analyzer.calculate(table)
+      return calc.value.get
     }
   }
 

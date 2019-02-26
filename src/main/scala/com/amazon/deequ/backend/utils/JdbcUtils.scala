@@ -29,7 +29,7 @@ object JdbcUtils {
         throw new SQLConnectionException(
           s"Could not establish a connection to the specified SQL Server")
       case e: Exception =>
-        throw new AnalyzerRuntimeException(s"Error while executing Analyzer job")
+        throw new AnalyzerRuntimeException(e.getMessage)
     }
     finally {
       if (connection.isDefined)
