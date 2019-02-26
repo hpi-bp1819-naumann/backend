@@ -1,18 +1,14 @@
 package com.amazon.deequ.backend.utils
 
 import java.net.ConnectException
-import java.sql.{Connection, DriverManager, SQLException}
+import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
 import com.amazon.deequ.backend.DbSettings.DbSettings
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerRuntimeException, SQLConnectionException}
 import org.apache.spark.sql.SparkSession
 
-import scala.io.Source
-
 object JdbcUtils {
-
-  val jdbcUrl = DbSettings.dburi
 
   def connectionProperties(): Properties = {
     DbSettings.connectionProperties
@@ -20,6 +16,7 @@ object JdbcUtils {
 
   def withJdbc(func: Connection => Unit): Unit = {
     var connection: Option[Connection] = None
+    val jdbcUrl = DbSettings.dburi
 
     try {
       connection = Some(DriverManager.getConnection(jdbcUrl, connectionProperties()))

@@ -2,7 +2,8 @@ package com.amazon.deequ.backend.jobmanagement
 
 import com.amazon.deequ.analyzers.jdbc.{JdbcAnalyzer, Table}
 import com.amazon.deequ.analyzers.{Analyzer, State}
-import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, withJdbc, withSpark}
+import com.amazon.deequ.backend.DbSettings.DbSettings
+import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, withJdbc, withSpark}
 import com.amazon.deequ.metrics.Metric
 import org.json4s.{DefaultFormats, Formats, JValue}
 
@@ -62,7 +63,7 @@ abstract class AnalyzerJob[T <: AnalyzerParams] {
 
   def analyzerWithSpark[S <: State[_], M <: Metric[_], A <: Analyzer[S, M]](analyzer: A, tableName: String): Any = {
     withSpark { session =>
-      val data = session.read.jdbc(jdbcUrl, tableName, connectionProperties())
+      val data = session.read.jdbc(DbSettings.dburi, tableName, connectionProperties())
       return analyzer.calculate(data).value
     }
   }
