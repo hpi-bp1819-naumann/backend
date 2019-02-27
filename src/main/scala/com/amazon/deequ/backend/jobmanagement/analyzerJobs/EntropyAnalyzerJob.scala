@@ -23,7 +23,7 @@ object EntropyAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
       JdbcEntropy(params.column), params.table)
   }
 
-  def funcWithSpark(params: ColumnAnalyzerParams) {
+  def funcWithSpark(params: ColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Entropy](
       Entropy(params.column), params.table)
   }

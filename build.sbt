@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
   "com.sun.jersey" % "jersey-server" % "1.19.4"
 )
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7"
 
 unmanagedBase := baseDirectory.value / "lib"
 enablePlugins(SbtTwirl)

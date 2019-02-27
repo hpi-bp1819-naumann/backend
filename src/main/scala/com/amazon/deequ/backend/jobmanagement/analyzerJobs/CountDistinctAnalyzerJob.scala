@@ -23,7 +23,7 @@ object CountDistinctAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
       JdbcCountDistinct(params.columns), params.table)
   }
 
-  def funcWithSpark(params: MultiColumnAnalyzerParams) {
+  def funcWithSpark(params: MultiColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, CountDistinct](
       CountDistinct(params.columns), params.table)
   }

@@ -23,7 +23,7 @@ object HistogramAnalyzerJob extends AnalyzerJob[ColumnAnalyzerParams] {
       JdbcHistogram(params.column), params.table)
   }
 
-  def funcWithSpark(params: ColumnAnalyzerParams) {
+  def funcWithSpark(params: ColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, HistogramMetric, Histogram](
       Histogram(params.column), params.table)
   }

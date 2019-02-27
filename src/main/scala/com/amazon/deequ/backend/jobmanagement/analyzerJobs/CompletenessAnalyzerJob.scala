@@ -23,7 +23,7 @@ object CompletenessAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams]
       JdbcCompleteness(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[NumMatchesAndCount, DoubleMetric, Completeness](
       Completeness(params.column, params.where), params.table)
   }

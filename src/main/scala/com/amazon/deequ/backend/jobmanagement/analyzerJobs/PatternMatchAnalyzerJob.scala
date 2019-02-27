@@ -30,7 +30,7 @@ object PatternMatchAnalyzerJob extends AnalyzerJob[PatternMatchAnalyzerParams] {
       JdbcPatternMatch(params.column, params.pattern, params.where), params.table)
   }
 
-  def funcWithSpark(params: PatternMatchAnalyzerParams) {
+  def funcWithSpark(params: PatternMatchAnalyzerParams): Any = {
     analyzerWithSpark[NumMatchesAndCount, DoubleMetric, PatternMatch](
       PatternMatch(params.column, params.pattern, params.where), params.table)
   }

@@ -23,7 +23,7 @@ object MaximumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcMaximum(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[MaxState, DoubleMetric, Maximum](
       Maximum(params.column, params.where), params.table)
   }

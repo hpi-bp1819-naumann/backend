@@ -28,7 +28,7 @@ object CorrelationAnalyzerJob extends AnalyzerJob[CorrelationAnalyzerParams] {
       JdbcCorrelation(params.firstColumn, params.secondColumn, params.where), params.table)
   }
 
-  def funcWithSpark(params: CorrelationAnalyzerParams) {
+  def funcWithSpark(params: CorrelationAnalyzerParams): Any = {
     analyzerWithSpark[CorrelationState, DoubleMetric, Correlation](
       Correlation(params.firstColumn, params.secondColumn, params.where), params.table)
   }

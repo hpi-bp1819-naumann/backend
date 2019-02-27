@@ -23,7 +23,7 @@ object DistinctnessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
       JdbcDistinctness(params.columns), params.table)
   }
 
-  def funcWithSpark(params: MultiColumnAnalyzerParams) {
+  def funcWithSpark(params: MultiColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Distinctness](
       Distinctness(params.columns), params.table)
   }

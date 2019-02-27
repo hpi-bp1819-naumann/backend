@@ -23,7 +23,7 @@ object UniquenessAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams] {
       JdbcUniqueness(params.columns), params.table)
   }
 
-  def funcWithSpark(params: MultiColumnAnalyzerParams) {
+  def funcWithSpark(params: MultiColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, Uniqueness](
       Uniqueness(params.columns), params.table)
   }

@@ -23,7 +23,7 @@ object MeanAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcMean(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[MeanState, DoubleMetric, Mean](
       Mean(params.column, params.where), params.table)
   }

@@ -23,7 +23,7 @@ object UniqueValueRatioAnalyzerJob extends AnalyzerJob[MultiColumnAnalyzerParams
       JdbcUniqueValueRatio(params.columns), params.table)
   }
 
-  def funcWithSpark(params: MultiColumnAnalyzerParams) {
+  def funcWithSpark(params: MultiColumnAnalyzerParams): Any = {
     analyzerWithSpark[FrequenciesAndNumRows, DoubleMetric, UniqueValueRatio](
       UniqueValueRatio(params.columns), params.table)
   }

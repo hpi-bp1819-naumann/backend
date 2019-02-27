@@ -23,7 +23,7 @@ object MinimumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcMinimum(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[MinState, DoubleMetric, Minimum](
       Minimum(params.column, params.where), params.table)
   }

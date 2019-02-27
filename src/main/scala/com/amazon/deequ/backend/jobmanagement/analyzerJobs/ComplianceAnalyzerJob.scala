@@ -28,7 +28,7 @@ object ComplianceAnalyzerJob extends AnalyzerJob[ComplianceAnalyzerParams] {
       JdbcCompliance(params.instance, params.predicate, params.where), params.table)
   }
 
-  def funcWithSpark(params: ComplianceAnalyzerParams): Unit = {
+  def funcWithSpark(params: ComplianceAnalyzerParams): Any = {
     analyzerWithSpark[NumMatchesAndCount, DoubleMetric, Compliance](
       Compliance(params.instance, params.predicate, params.where), params.table)
   }

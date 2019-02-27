@@ -23,7 +23,7 @@ object StandardDeviationAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerPa
       JdbcStandardDeviation(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[StandardDeviationState, DoubleMetric, StandardDeviation](
       StandardDeviation(params.column, params.where), params.table)
   }

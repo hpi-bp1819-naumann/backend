@@ -23,7 +23,7 @@ object SumAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcSum(params.column, params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[SumState, DoubleMetric, Sum](
       Sum(params.column, params.where), params.table)
   }

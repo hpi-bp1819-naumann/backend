@@ -23,7 +23,7 @@ object SizeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcSize(params.where), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[NumMatches, DoubleMetric, Size](
       Size(params.where), params.table)
   }

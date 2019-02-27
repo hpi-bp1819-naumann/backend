@@ -23,7 +23,7 @@ object DataTypeAnalyzerJob extends AnalyzerJob[ColumnAndWhereAnalyzerParams] {
       JdbcDataType(params.column), params.table)
   }
 
-  def funcWithSpark(params: ColumnAndWhereAnalyzerParams) {
+  def funcWithSpark(params: ColumnAndWhereAnalyzerParams): Any = {
     analyzerWithSpark[DataTypeHistogram, HistogramMetric, DataType](
       DataType(params.column), params.table)
   }
