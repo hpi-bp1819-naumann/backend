@@ -18,7 +18,7 @@ case class AnalysisRun(tableName: String, context: String) {
     "completeness" -> CompletenessAnalyzerExtractor,
             "compliance" -> ComplianceAnalyzerExtractor,
             "correlation" -> CorrelationAnalyzerExtractor,
-            "countDistinct" -> CountDistinctAnalyzerExtractor/*,
+            "countDistinct" -> CountDistinctAnalyzerExtractor,
             "dataType" -> DataTypeAnalyzerExtractor,
             "distinctness" -> DistinctnessAnalyzerExtractor,
             "entropy" -> EntropyAnalyzerExtractor,
@@ -31,7 +31,7 @@ case class AnalysisRun(tableName: String, context: String) {
             "standardDeviation" -> StandardDeviationAnalyzerExtractor,
             "sum" -> SumAnalyzerExtractor,
             "uniqueness" -> UniquenessAnalyzerExtractor,
-            "uniqueValueRatio" -> UniqueValueRatioAnalyzerExtractor*/
+            "uniqueValueRatio" -> UniqueValueRatioAnalyzerExtractor
   )
 
   def from(parsedBody: JValue): ExecutableAnalyzerJob = {
