@@ -8,7 +8,6 @@ import org.json4s.JValue
 import scala.collection.immutable.ListMap
 
 class JobManagement {
-
   private var jobs = synchronized(Map[String, ExecutableAnalyzerJob]())
 
   private val availableAnalyzers = ListMap[String, AnalyzerJob[_]](
@@ -102,6 +101,22 @@ class JobManagement {
     job.start()
 
     jobId
+  }
+
+  def startJobs(tableName: String, context: String, parsedBody: JValue): Any = {
+    if (!AnalyzerContext.availableContexts().contains(context)) {
+      throw new NoSuchContextException(
+        s"There is not supported context called $context. " +
+          s"Available contexts are ${AnalyzerContext.availableContexts().mkString("[", ", ", "]")}")
+    }
+
+    val analysisRunJob = AnalysisRun(tableName, context).from(parsedBody)
+    val jobId = randomUUID().toString.replace("-", "")
+    jobs += (jobId -> analysisRunJob)
+    analysisRunJob.start()
+
+    jobId
+
   }
 
   def deleteJob(jobId: String): Unit = {

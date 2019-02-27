@@ -18,7 +18,7 @@ object JdbcUtils {
     DbSettings.connectionProperties
   }
 
-  def withJdbc(func: Connection => Unit): Unit = {
+  def withJdbc[T](func: Connection => T): T = {
     var connection: Option[Connection] = None
 
     try {
