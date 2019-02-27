@@ -37,7 +37,7 @@ object JdbcUtils {
     }
   }
 
-  def withSpark(func: SparkSession => Unit): Unit = {
+  def withSpark[T](func: SparkSession => T): T = {
     val session = SparkSession.builder()
       .master("local")
       .appName("test")
