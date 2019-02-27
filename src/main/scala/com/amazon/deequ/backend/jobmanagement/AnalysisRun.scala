@@ -3,8 +3,9 @@ package com.amazon.deequ.backend.jobmanagement
 import com.amazon.deequ.analyzers.Analyzer
 import com.amazon.deequ.analyzers.jdbc.{JdbcAnalyzer, Table}
 import com.amazon.deequ.analyzers.runners.{AnalysisRunner, JdbcAnalysisRunner}
+import com.amazon.deequ.backend.DbSettings.DbSettings
 import com.amazon.deequ.backend.jobmanagement.extractors._
-import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, withJdbc, withSpark}
+import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, withJdbc, withSpark}
 import com.amazon.deequ.metrics.Metric
 import org.json4s.JsonAST.JValue
 import org.json4s.{DefaultFormats, Formats}
@@ -51,7 +52,7 @@ case class AnalysisRun(tableName: String, context: String) {
         val analyzers = parseSparkAnalyzers(requestedAnalyzers)
 
         () => withSpark { session =>
-          val data = session.read.jdbc(jdbcUrl, tableName, connectionProperties())
+          val data = session.read.jdbc(DbSettings.dburi, tableName, connectionProperties())
           AnalysisRunner.doAnalysisRun(data, analyzers).allMetrics
         }
     }
