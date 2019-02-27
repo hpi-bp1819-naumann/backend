@@ -1,4 +1,4 @@
-package com.amazon.deequ.backend.DbSettings
+package com.amazon.deequ.backend.dbSettings
 import java.io.FileOutputStream
 import java.util.Properties
 

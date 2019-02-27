@@ -4,7 +4,7 @@ import java.net.ConnectException
 import java.sql.{Connection, DriverManager, SQLException}
 import java.util.Properties
 
-import com.amazon.deequ.backend.DbSettings.DbSettings
+import com.amazon.deequ.backend.dbSettings.DbSettings
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerRuntimeException, SQLConnectionException}
 import org.apache.spark.sql.SparkSession
 

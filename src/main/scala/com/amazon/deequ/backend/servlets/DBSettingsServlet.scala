@@ -3,7 +3,7 @@ package com.amazon.deequ.backend.servlets
 import org.json4s.JsonDSL._
 import org.json4s.jackson.Serialization
 import org.scalatra.Ok
-import com.amazon.deequ.backend.DbSettings.DbSettings
+import com.amazon.deequ.backend.dbSettings.DbSettings
 
 class DBSettingsServlet extends Servlet {
 
