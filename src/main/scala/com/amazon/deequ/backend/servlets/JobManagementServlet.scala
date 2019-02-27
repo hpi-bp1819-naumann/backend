@@ -110,4 +110,13 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
+  post("/:table/:context/start") {
+    try {
+      val tableName = params("table")
+      val context = params("context")
+      val jobId = jobManager.startJobs(tableName, context, parsedBody)
+      val response = ("message" -> "Successfully started job") ~ ("jobId" -> jobId.toString)
+      Ok(response)
+    } catch errorHandling
+  }
 }

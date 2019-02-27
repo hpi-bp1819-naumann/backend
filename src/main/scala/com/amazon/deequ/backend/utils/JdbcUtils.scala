@@ -18,7 +18,7 @@ object JdbcUtils {
     DbSettings.connectionProperties
   }
 
-  def withJdbc(func: Connection => Unit): Unit = {
+  def withJdbc[T](func: Connection => T): T = {
     var connection: Option[Connection] = None
 
     try {
@@ -37,7 +37,7 @@ object JdbcUtils {
     }
   }
 
-  def withSpark(func: SparkSession => Unit): Unit = {
+  def withSpark[T](func: SparkSession => T): T = {
     val session = SparkSession.builder()
       .master("local")
       .appName("test")
