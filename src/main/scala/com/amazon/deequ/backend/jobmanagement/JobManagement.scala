@@ -50,6 +50,7 @@ class JobManagement {
           "startingTime" -> theJob.startTime,
           "finishingTime" -> theJob.endTime,
           "result" -> theJob.result,
+          "errorMessage" -> theJob.errorMessage,
           "name" -> theJob.analyzerName,
           "params" -> theJob.parameters
         )
@@ -78,6 +79,8 @@ class JobManagement {
         if (status == JobStatus.completed) {
           m += ("result" -> job.result)
           m += ("finishingTime" -> job.endTime)
+        } else if (status == JobStatus.error) {
+          m += ("errorMessage" -> job.errorMessage)
         }
         m
     }.toSeq
