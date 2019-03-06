@@ -2,9 +2,14 @@ package com.amazon.deequ.backend.jobmanagement.extractors
 
 import com.amazon.deequ.analyzers.Compliance
 import com.amazon.deequ.analyzers.jdbc.JdbcCompliance
-import com.amazon.deequ.backend.jobmanagement.RequestParameter
-import com.amazon.deequ.backend.jobmanagement.analyzerJobs.ComplianceAnalyzerParams
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerParams, RequestParameter}
 import org.json4s.JValue
+
+case class ComplianceAnalyzerParams(analyzer: String,
+                                    instance: String,
+                                    predicate: String,
+                                    where: Option[String] = None)
+  extends AnalyzerParams
 
 object ComplianceAnalyzerExtractor extends AnalyzerExtractor[ComplianceAnalyzerParams] {
   override var params: ComplianceAnalyzerParams = _

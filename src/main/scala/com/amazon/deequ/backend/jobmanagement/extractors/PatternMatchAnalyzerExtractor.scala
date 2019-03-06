@@ -2,8 +2,6 @@ package com.amazon.deequ.backend.jobmanagement.extractors
 
 import com.amazon.deequ.analyzers.PatternMatch
 import com.amazon.deequ.analyzers.jdbc.JdbcPatternMatch
-import com.amazon.deequ.backend.jobmanagement.analyzerJobs.PatternMatchAnalyzerJob.extractFieldNames
-import com.amazon.deequ.backend.jobmanagement.analyzerJobs.PatternMatchAnalyzerParams
 import com.amazon.deequ.backend.jobmanagement.{AnalyzerParams, RequestParameter}
 import org.json4s.JValue
 

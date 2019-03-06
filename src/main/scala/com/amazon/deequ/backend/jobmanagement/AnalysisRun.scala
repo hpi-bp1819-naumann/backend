@@ -26,7 +26,7 @@ case class AnalysisRun(tableName: String, context: String) {
       case AnalyzerContext.jdbc =>
         val analyzerToParams = parseJdbcAnalyzers(requestedAnalyzers)
         params = analyzerToParams.asInstanceOf[Map[Any, AnalyzerParams]]
-        val analyzers = analyzerToParams.keySet.toSeq
+        val analyzers = analyzerToParams.keySet.asInstanceOf[Seq[JdbcAnalyzer[_, Metric[_]]]]
 
         () => withJdbc[Map[Any, Metric[_]]] { connection =>
           val table = Table(tableName, connection)
@@ -35,7 +35,7 @@ case class AnalysisRun(tableName: String, context: String) {
       case AnalyzerContext.spark =>
         val analyzerToParams = parseSparkAnalyzers(requestedAnalyzers)
         params = analyzerToParams.asInstanceOf[Map[Any, AnalyzerParams]]
-        val analyzers = analyzerToParams.keySet.toSeq
+        val analyzers = analyzerToParams.keySet.asInstanceOf[Seq[Analyzer[_, Metric[_]]]]
 
         () => withSpark[Map[Any, Metric[_]]] { session =>
           val data = session.read.jdbc(DbSettings.dburi, tableName, connectionProperties())
@@ -72,23 +72,24 @@ case class AnalysisRun(tableName: String, context: String) {
     })
   }
 
-  def parseJdbcAnalyzers(requestedAnalyzers: Seq[JValue]): Map[JdbcAnalyzer[_, Metric[_]], AnalyzerParams] = {
+  def parseJdbcAnalyzers(requestedAnalyzers: Seq[JValue]): Map[Any, AnalyzerParams] = {
     val extractors = parseAnalyzerExtractors(requestedAnalyzers)
-    extractors.map(extractor =>
-      extractor.analyzerWithJdbc() -> extractor.params.asInstanceOf[AnalyzerParams]
-    ).toMap
+
+    extractors.map { extractor =>
+      extractor.analyzerWithJdbc().asInstanceOf[Any] -> extractor.params.asInstanceOf[AnalyzerParams]
+    }.toMap
   }
 
-  def parseSparkAnalyzers(requestedAnalyzers: Seq[JValue]): Map[Analyzer[_, Metric[_]], AnalyzerParams] = {
+  def parseSparkAnalyzers(requestedAnalyzers: Seq[JValue]): Map[Any, AnalyzerParams] = {
     val extractors = parseAnalyzerExtractors(requestedAnalyzers)
     extractors.map(extractor =>
-      extractor.analyzerWithSpark() -> extractor.params.asInstanceOf[AnalyzerParams]
+      extractor.analyzerWithSpark().asInstanceOf[Any] -> extractor.params.asInstanceOf[AnalyzerParams]
     ).toMap
   }
 }
 
 object AnalysisRun {
-  val availableExtractors = ListMap[String, AnalyzerExtractor[_]](
+  val availableExtractors: ListMap[String, AnalyzerExtractor[_]] = ListMap[String, AnalyzerExtractor[_]](
     "completeness" -> CompletenessAnalyzerExtractor,
     "compliance" -> ComplianceAnalyzerExtractor,
     "correlation" -> CorrelationAnalyzerExtractor,
@@ -107,4 +108,15 @@ object AnalysisRun {
     "uniqueness" -> UniquenessAnalyzerExtractor,
     "uniqueValueRatio" -> UniqueValueRatioAnalyzerExtractor
   )
+}
+
+case class RequestParameter(name: String, _type: String)
+
+object AnalyzerContext extends Enumeration {
+  val jdbc = "jdbc"
+  val spark = "spark"
+
+  def availableContexts(): Seq[String] = {
+    Seq(jdbc, spark)
+  }
 }
