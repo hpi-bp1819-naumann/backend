@@ -19,4 +19,24 @@ object UniquenessAnalyzerExtractor extends AnalyzerExtractor[MultiColumnAnalyzer
   def analyzerWithSpark(): Uniqueness = {
     Uniqueness(params.columns)
   }
+
+  def parseQuery(tableName: String, params: MultiColumnAnalyzerParams): String = {
+    val columns = params.columns
+    val select = columns.mkString("", " , ", "")
+    val where = columns.mkString("", " is not null and ", " is not null")
+
+    s"""
+       |SELECT $select FROM (
+       | SELECT
+       |  $select, count(*) as cnt
+       |	FROM
+       |   $tableName
+       |	WHERE
+       |   $where
+       |	GROUP BY
+       |   $select
+       | ) as GROUPING
+       |WHERE cnt = 1
+    """.stripMargin
+  }
 }

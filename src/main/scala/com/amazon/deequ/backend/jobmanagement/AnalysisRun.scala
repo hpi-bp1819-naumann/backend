@@ -63,7 +63,7 @@ case class AnalysisRun(tableName: String, context: String) {
         }
     }
 
-    ExecutableAnalyzerJob("AnalysisRun", analysisRun, params)
+    ExecutableAnalyzerJob("AnalysisRun", tableName, context, analysisRun, params)
   }
 
   def parseAnalyzerExtractors(requestedAnalyzers: Seq[JValue]): Seq[AnalyzerExtractor[_]] = {

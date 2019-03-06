@@ -19,4 +19,22 @@ object DistinctnessAnalyzerExtractor extends AnalyzerExtractor[MultiColumnAnalyz
   def analyzerWithSpark(): Distinctness = {
     Distinctness(params.columns)
   }
+
+  def parseQuery(tableName: String, params: MultiColumnAnalyzerParams): String = {
+    val tableName = params.analyzer
+    val columns = params.columns
+    val select = columns.mkString("", " , ", "")
+    val where = columns.mkString("", " is not null and ", " is not null")
+
+    s"""
+       |SELECT
+       | $select, count(*) as cnt
+       |FROM
+       | $tableName
+       |WHERE
+       | $where
+       |GROUP BY
+       | $select
+    """.stripMargin
+  }
 }

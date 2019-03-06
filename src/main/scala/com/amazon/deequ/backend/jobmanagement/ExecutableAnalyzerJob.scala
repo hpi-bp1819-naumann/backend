@@ -9,6 +9,8 @@ import com.amazon.deequ.metrics.Metric
   * @param analyzerToParam Map from an analyzer to its corresponding parameters
   */
 case class ExecutableAnalyzerJob(jobName: String,
+                                 tableName: String,
+                                 context: String,
                                  jobFunction: () => Map[Any, Metric[_]],
                                  analyzerToParam: Map[Any, AnalyzerParams])
   extends Runnable {
