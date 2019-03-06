@@ -25,8 +25,8 @@ case class AnalysisRun(tableName: String, context: String) {
     val analysisRun = context match {
       case AnalyzerContext.jdbc =>
         val analyzerToParams = parseJdbcAnalyzers(requestedAnalyzers)
-        params = analyzerToParams.asInstanceOf[Map[Any, AnalyzerParams]]
-        val analyzers = analyzerToParams.keySet.asInstanceOf[Seq[JdbcAnalyzer[_, Metric[_]]]]
+        params = analyzerToParams
+        val analyzers = analyzerToParams.keys.map(analyzer => analyzer.asInstanceOf[JdbcAnalyzer[_, Metric[_]]]).toSeq
 
         () => withJdbc[Map[Any, Metric[_]]] { connection =>
           val table = Table(tableName, connection)
@@ -34,8 +34,8 @@ case class AnalysisRun(tableName: String, context: String) {
         }
       case AnalyzerContext.spark =>
         val analyzerToParams = parseSparkAnalyzers(requestedAnalyzers)
-        params = analyzerToParams.asInstanceOf[Map[Any, AnalyzerParams]]
-        val analyzers = analyzerToParams.keySet.asInstanceOf[Seq[Analyzer[_, Metric[_]]]]
+        params = analyzerToParams
+        val analyzers = analyzerToParams.keys.map(analyzer => analyzer.asInstanceOf[Analyzer[_, Metric[_]]]).toSeq
 
         () => withSpark[Map[Any, Metric[_]]] { session =>
           val data = session.read.jdbc(DbSettings.dburi, tableName, connectionProperties())
