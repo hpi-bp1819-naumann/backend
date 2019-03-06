@@ -2,10 +2,16 @@ package com.amazon.deequ.backend.jobmanagement.extractors
 
 import com.amazon.deequ.analyzers.Uniqueness
 import com.amazon.deequ.analyzers.jdbc.JdbcUniqueness
-import com.amazon.deequ.backend.jobmanagement.{ColumnAndWhereAnalyzerParams, MultiColumnAnalyzerParams}
+import com.amazon.deequ.backend.jobmanagement.{MultiColumnAnalyzerParams, RequestParameter}
 import org.json4s.JValue
 
 object UniquenessAnalyzerExtractor extends AnalyzerExtractor[MultiColumnAnalyzerParams] {
+  val name = "Uniqueness"
+  val description = "Gives the fraction of values of the given column that only appear once in the whole column divided by the Size of the column."
+
+  val acceptedRequestParams: () => Array[RequestParameter] =
+    () => extractFieldNames[MultiColumnAnalyzerParams]
+
   override var params: MultiColumnAnalyzerParams = _
 
   def extractFromJson(requestParams: JValue): Unit = {

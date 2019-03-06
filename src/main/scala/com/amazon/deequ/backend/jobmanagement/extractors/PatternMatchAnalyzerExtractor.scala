@@ -2,17 +2,26 @@ package com.amazon.deequ.backend.jobmanagement.extractors
 
 import com.amazon.deequ.analyzers.PatternMatch
 import com.amazon.deequ.analyzers.jdbc.JdbcPatternMatch
-import com.amazon.deequ.backend.jobmanagement.AnalyzerParams
+import com.amazon.deequ.backend.jobmanagement.analyzerJobs.PatternMatchAnalyzerJob.extractFieldNames
+import com.amazon.deequ.backend.jobmanagement.analyzerJobs.PatternMatchAnalyzerParams
+import com.amazon.deequ.backend.jobmanagement.{AnalyzerParams, RequestParameter}
 import org.json4s.JValue
 
 import scala.util.matching.Regex
 
-case class PatternMatchAnalyzerParams(context: String, table: String,
-                                      var column: String, var pattern: Regex,
-                                      var where: Option[String] = None)
+case class PatternMatchAnalyzerParams(analyzer: String,
+                                      column: String,
+                                      pattern: Regex,
+                                      where: Option[String] = None)
   extends AnalyzerParams
 
 object PatternMatchAnalyzerExtractor extends AnalyzerExtractor[PatternMatchAnalyzerParams] {
+  val name = "PatternMatch"
+  val description = "Gives the fraction of values that match a certain regex constraint divided by all values in the given column."
+
+  val acceptedRequestParams: () => Array[RequestParameter] =
+    () => extractFieldNames[PatternMatchAnalyzerParams]
+
   override var params: PatternMatchAnalyzerParams = _
 
   def extractFromJson(requestParams: JValue): Unit = {
