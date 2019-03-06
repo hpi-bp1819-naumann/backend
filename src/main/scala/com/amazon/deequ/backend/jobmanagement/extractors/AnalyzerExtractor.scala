@@ -9,7 +9,7 @@ import org.json4s.{DefaultFormats, Formats, JValue}
 abstract class AnalyzerExtractor[T <: AnalyzerParams] {
   implicit val formats: Formats = DefaultFormats
 
-  var params: T
+  var params: T = _
 
   def extractFromJson(requestParams: JValue): Unit
 

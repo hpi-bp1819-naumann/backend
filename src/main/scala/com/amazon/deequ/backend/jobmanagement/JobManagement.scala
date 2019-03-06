@@ -50,14 +50,14 @@ class JobManagement {
           "finishingTime" -> theJob.endTime,
           "result" -> theJob.result,
           "errorMessage" -> theJob.errorMessage,
-          "name" -> theJob.analyzerName,
-          "params" -> theJob.parameters
+          "name" -> theJob.jobName,
+          "params" -> theJob.getAnalyzerToParam
         )
-        theJob.analyzerName match {
+        theJob.jobName match {
           case "Uniqueness" | "UniqueValueRatio" =>
-            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
+            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.getAnalyzerToParam))
           case "Distinctness" | "CountDistinct"  =>
-            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
+            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.getAnalyzerToParam))
           case _ =>
         }
         response
@@ -72,7 +72,7 @@ class JobManagement {
         val status = job.status
         var m = Map[String, Any](
           "id" -> id,
-          "name" -> job.analyzerName,
+          "name" -> job.jobName,
           "status" -> status.toString)
         m += "startingTime" -> job.startTime
         if (status == JobStatus.completed) {
@@ -148,7 +148,8 @@ class JobManagement {
   }
 
   def getJobParams(jobId: String): Map[String, Any] = {
-    jobs(jobId).parameters
+    // TODO: rework
+    Map()
   }
 
   def getJobResult(jobId: String): Any = {
@@ -162,17 +163,27 @@ class JobManagement {
 }
 
 trait AnalyzerParams {
-  val context: String
-  val table: String
+  def toMap: Map[String, Any]
 }
 
-case class ColumnAnalyzerParams(context: String, table: String, column: String)
-  extends AnalyzerParams
+case class ColumnAnalyzerParams(column: String)
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    Map("column" -> column)
+  }
+}
 
-case class ColumnAndWhereAnalyzerParams(context: String, table: String,
-                                        column: String,
+case class ColumnAndWhereAnalyzerParams(column: String,
                                         where: Option[String] = None)
-  extends AnalyzerParams
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    Map("column" -> column, "where" -> where)
+  }
+}
 
-case class MultiColumnAnalyzerParams(context: String, table: String, columns: Seq[String])
-  extends AnalyzerParams
+case class MultiColumnAnalyzerParams(columns: Seq[String])
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    Map("columns" -> columns)
+  }
+}
