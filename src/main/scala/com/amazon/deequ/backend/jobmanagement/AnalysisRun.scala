@@ -15,26 +15,6 @@ import scala.collection.immutable.ListMap
 case class AnalysisRun(tableName: String, context: String) {
   implicit val formats: Formats = DefaultFormats
 
-  private val availableExtractors = ListMap[String, AnalyzerExtractor[_]](
-    "completeness" -> CompletenessAnalyzerExtractor,
-            "compliance" -> ComplianceAnalyzerExtractor,
-            "correlation" -> CorrelationAnalyzerExtractor,
-            "countDistinct" -> CountDistinctAnalyzerExtractor,
-            "dataType" -> DataTypeAnalyzerExtractor,
-            "distinctness" -> DistinctnessAnalyzerExtractor,
-            "entropy" -> EntropyAnalyzerExtractor,
-            "histogram" -> HistogramAnalyzerExtractor,
-            "maximum" -> MaximumAnalyzerExtractor,
-            "mean" -> MeanAnalyzerExtractor,
-            "minimum" -> MinimumAnalyzerExtractor,
-            "patternMatch" -> PatternMatchAnalyzerExtractor,
-            "size" -> SizeAnalyzerExtractor,
-            "standardDeviation" -> StandardDeviationAnalyzerExtractor,
-            "sum" -> SumAnalyzerExtractor,
-            "uniqueness" -> UniquenessAnalyzerExtractor,
-            "uniqueValueRatio" -> UniqueValueRatioAnalyzerExtractor
-  )
-
   def from(parsedBody: JValue): ExecutableAnalyzerJob = {
 
     val body = parsedBody.extract[Map[String, Seq[JValue]]]
@@ -71,13 +51,13 @@ case class AnalysisRun(tableName: String, context: String) {
       val extractedParams = analyzerParams.extract[Map[String, Any]]
       val analyzerName = extractedParams("analyzer").toString
 
-      if (!availableExtractors.exists(_._1 == analyzerName)) {
+      if (!AnalysisRun.availableExtractors.exists(_._1 == analyzerName)) {
         throw new NoSuchAnalyzerException(
           s"There is no analyzer called $analyzerName. " +
-            s"Available analyzers are ${availableExtractors.keys.mkString("[", ", ", "]")}")
+            s"Available analyzers are ${AnalysisRun.availableExtractors.keys.mkString("[", ", ", "]")}")
       }
 
-      val analyzerExtractor = availableExtractors(analyzerName)
+      val analyzerExtractor = AnalysisRun.availableExtractors(analyzerName)
 
       try {
         analyzerExtractor.extractFromJson(analyzerParams)
@@ -105,4 +85,26 @@ case class AnalysisRun(tableName: String, context: String) {
       extractor.analyzerWithSpark() -> extractor.params.asInstanceOf[AnalyzerParams]
     ).toMap
   }
+}
+
+object AnalysisRun {
+  val availableExtractors = ListMap[String, AnalyzerExtractor[_]](
+    "completeness" -> CompletenessAnalyzerExtractor,
+    "compliance" -> ComplianceAnalyzerExtractor,
+    "correlation" -> CorrelationAnalyzerExtractor,
+    "countDistinct" -> CountDistinctAnalyzerExtractor,
+    "dataType" -> DataTypeAnalyzerExtractor,
+    "distinctness" -> DistinctnessAnalyzerExtractor,
+    "entropy" -> EntropyAnalyzerExtractor,
+    "histogram" -> HistogramAnalyzerExtractor,
+    "maximum" -> MaximumAnalyzerExtractor,
+    "mean" -> MeanAnalyzerExtractor,
+    "minimum" -> MinimumAnalyzerExtractor,
+    "patternMatch" -> PatternMatchAnalyzerExtractor,
+    "size" -> SizeAnalyzerExtractor,
+    "standardDeviation" -> StandardDeviationAnalyzerExtractor,
+    "sum" -> SumAnalyzerExtractor,
+    "uniqueness" -> UniquenessAnalyzerExtractor,
+    "uniqueValueRatio" -> UniqueValueRatioAnalyzerExtractor
+  )
 }

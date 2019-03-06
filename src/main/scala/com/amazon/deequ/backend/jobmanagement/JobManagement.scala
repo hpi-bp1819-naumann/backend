@@ -32,13 +32,17 @@ class JobManagement {
   )
 
   def getAvailableAnalyzers: Seq[Map[String, Any]] = {
-    availableAnalyzers.map(
-      entry => Map[String, Any](
-        "name" -> entry._2.name, "key" -> entry._1, "description" -> entry._2.description,
-      "parameters" -> entry._2.acceptedRequestParams().map(param => Map[String, Any](
-        "name" -> param.name,
-        "type" -> param._type
-    )))).toSeq
+    AnalysisRun.availableExtractors.map {
+      case (analyzerKey, extractor) =>
+        val allowedParameters =  extractor.acceptedRequestParams().map(
+          param => Map[String, Any]("name" -> param.name, "type" -> param._type))
+        Map[String, Any](
+          "name" -> extractor.name,
+          "key" -> analyzerKey,
+          "description" -> extractor.description,
+          "parameters" -> allowedParameters
+          )
+    }.toSeq
   }
 
   def getJob(jobId: String): Map[String, Any] = {
