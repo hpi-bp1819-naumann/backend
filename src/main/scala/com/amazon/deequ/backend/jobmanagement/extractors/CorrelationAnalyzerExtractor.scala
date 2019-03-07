@@ -9,7 +9,11 @@ case class CorrelationAnalyzerParams(analyzer: String,
                                      firstColumn: String,
                                      secondColumn: String,
                                      where: Option[String] = None)
-  extends AnalyzerParams
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("firstColumn" -> firstColumn, "secondColumn" -> secondColumn, "where" -> where)
+  }
+}
 
 object CorrelationAnalyzerExtractor extends AnalyzerExtractor[CorrelationAnalyzerParams] {
   override var params: CorrelationAnalyzerParams = _

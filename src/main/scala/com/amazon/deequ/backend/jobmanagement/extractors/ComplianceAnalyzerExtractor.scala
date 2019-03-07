@@ -9,7 +9,11 @@ case class ComplianceAnalyzerParams(analyzer: String,
                                     instance: String,
                                     predicate: String,
                                     where: Option[String] = None)
-  extends AnalyzerParams
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("instance" -> instance, "predicate" -> predicate, "where" -> where)
+  }
+}
 
 object ComplianceAnalyzerExtractor extends AnalyzerExtractor[ComplianceAnalyzerParams] {
   override var params: ComplianceAnalyzerParams = _

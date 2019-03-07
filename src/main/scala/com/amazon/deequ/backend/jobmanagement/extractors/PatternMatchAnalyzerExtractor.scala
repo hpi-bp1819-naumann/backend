@@ -11,7 +11,11 @@ case class PatternMatchAnalyzerParams(analyzer: String,
                                       column: String,
                                       pattern: Regex,
                                       where: Option[String] = None)
-  extends AnalyzerParams
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("column" -> column, "pattern" -> pattern, "where" -> where)
+  }
+}
 
 object PatternMatchAnalyzerExtractor extends AnalyzerExtractor[PatternMatchAnalyzerParams] {
   val name = "PatternMatch"
