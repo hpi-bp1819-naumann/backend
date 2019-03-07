@@ -2,7 +2,7 @@ package com.amazon.deequ.backend.jobmanagement
 
 import java.util.UUID.randomUUID
 
-import com.amazon.deequ.backend.jobmanagement.extractors.{DistinctnessAnalyzerExtractor, UniquenessAnalyzerExtractor}
+import com.amazon.deequ.backend.jobmanagement.extractors.{AnalyzerExtractor, DistinctnessAnalyzerExtractor, UniquenessAnalyzerExtractor}
 import org.json4s.JValue
 
 class JobManagement {
@@ -10,7 +10,7 @@ class JobManagement {
 
   def getAvailableAnalyzers: Seq[Map[String, Any]] = {
     AnalysisRun.availableExtractors.map {
-      case (analyzerKey, extractor) =>
+      case (analyzerKey: String, extractor: AnalyzerExtractor[_]) =>
         val allowedParameters =  extractor.acceptedRequestParams().map(
           param => Map[String, Any]("name" -> param.name, "type" -> param._type))
         Map[String, Any](
@@ -26,38 +26,7 @@ class JobManagement {
     val job = Option(jobs(jobId))
     job match {
       case Some(theJob) =>
-        val analyzerResponses = theJob.result.map { case (analyzer, metric) =>
-          val params = theJob.analyzerToParam(analyzer)
-          val analyzerKey = params.analyzer
-
-          var analyzerResponse = Map[String, Any](
-            "result" -> metric.value,
-            "params" -> params.toMap
-          )
-
-          if (theJob.context == AnalyzerContext.jdbc) {
-            analyzerKey match {
-              case "uniqueness" | "uniqueValueRatio" =>
-                analyzerResponse += ("query" -> UniquenessAnalyzerExtractor.parseQuery(theJob.tableName,
-                  params.asInstanceOf[MultiColumnAnalyzerParams]))
-              case "distinctness" | "countDistinct"  =>
-                analyzerResponse += ("query" -> DistinctnessAnalyzerExtractor.parseQuery(theJob.tableName,
-                  params.asInstanceOf[MultiColumnAnalyzerParams]))
-              case _ =>
-            }
-          }
-
-          analyzerResponse
-        }
-
-        Map[String, Any]("id" -> jobId,
-          "status" -> theJob.status.toString,
-          "startingTime" -> theJob.startTime,
-          "finishingTime" -> theJob.endTime,
-          "errorMessage" -> theJob.errorMessage,
-          "name" -> theJob.jobName,
-          "analyzers" -> analyzerResponses
-        )
+        convertJob(jobId, theJob)
       case None =>
         throw new IllegalArgumentException("Job Id is not assigned")
     }
@@ -66,20 +35,43 @@ class JobManagement {
   def getJobs: Seq[Map[String, Any]] = {
     jobs.map {
       case (id: String, job: ExecutableAnalyzerJob) =>
-        val status = job.status
-        var m = Map[String, Any](
-          "id" -> id,
-          "name" -> job.jobName,
-          "status" -> status.toString)
-        m += "startingTime" -> job.startTime
-        if (status == JobStatus.completed) {
-          m += ("result" -> job.result)
-          m += ("finishingTime" -> job.endTime)
-        } else if (status == JobStatus.error) {
-          m += ("errorMessage" -> job.errorMessage)
-        }
-        m
+        convertJob(id, job)
     }.toSeq
+  }
+
+  private def convertJob(jobId: String, job: ExecutableAnalyzerJob): Map[String, Any] = {
+    val analyzerResponses = job.result.map { case (analyzer, metric) =>
+      val params = job.analyzerToParam(analyzer)
+      val analyzerKey = params.analyzer
+
+      var analyzerResponse = Map[String, Any](
+        "result" -> metric.value,
+        "params" -> params.toMap
+      )
+      if (job.context == AnalyzerContext.jdbc) {
+        analyzerKey match {
+          case "uniqueness" | "uniqueValueRatio" =>
+            analyzerResponse += ("query" -> UniquenessAnalyzerExtractor.parseQuery(job.tableName,
+              params.asInstanceOf[MultiColumnAnalyzerParams]))
+          case "distinctness" | "countDistinct"  =>
+            analyzerResponse += ("query" -> DistinctnessAnalyzerExtractor.parseQuery(job.tableName,
+              params.asInstanceOf[MultiColumnAnalyzerParams]))
+          case _ =>
+        }
+      }
+
+      analyzerResponse
+    }
+
+    Map[String, Any](
+      "id" -> jobId,
+      "status" -> job.status.toString,
+      "startingTime" -> job.startTime,
+      "finishingTime" -> job.endTime,
+      "errorMessage" -> job.errorMessage,
+      "name" -> job.jobName,
+      "analyzers" -> analyzerResponses
+    )
   }
 
   def startJobs(tableName: String, context: String, parsedBody: JValue): Any = {
@@ -95,7 +87,6 @@ class JobManagement {
     analysisRunJob.start()
 
     jobId
-
   }
 
   def deleteJob(jobId: String): Unit = {
@@ -132,6 +123,7 @@ class JobManagement {
   }
 
   def getJobResult(jobId: String): Any = {
+    // TODO: rework
     jobs(jobId).result
   }
 
