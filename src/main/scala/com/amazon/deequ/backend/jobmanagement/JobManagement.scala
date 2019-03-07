@@ -2,65 +2,32 @@ package com.amazon.deequ.backend.jobmanagement
 
 import java.util.UUID.randomUUID
 
-import com.amazon.deequ.backend.jobmanagement.analyzerJobs._
+import com.amazon.deequ.backend.jobmanagement.extractors.{AnalyzerExtractor, DistinctnessAnalyzerExtractor, UniquenessAnalyzerExtractor}
+import com.amazon.deequ.metrics.Distribution
 import org.json4s.JValue
-
-import scala.collection.immutable.ListMap
 
 class JobManagement {
   private var jobs = synchronized(Map[String, ExecutableAnalyzerJob]())
 
-  private val availableAnalyzers = ListMap[String, AnalyzerJob[_]](
-    "completeness" -> CompletenessAnalyzerJob,
-    "compliance" -> ComplianceAnalyzerJob,
-    "correlation" -> CorrelationAnalyzerJob,
-    "countDistinct" -> CountDistinctAnalyzerJob,
-    "dataType" -> DataTypeAnalyzerJob,
-    "distinctness" -> DistinctnessAnalyzerJob,
-    "entropy" -> EntropyAnalyzerJob,
-    "histogram" -> HistogramAnalyzerJob,
-    "maximum" -> MaximumAnalyzerJob,
-    "mean" -> MeanAnalyzerJob,
-    "minimum" -> MinimumAnalyzerJob,
-    "patternMatch" -> PatternMatchAnalyzerJob,
-    "size" -> SizeAnalyzerJob,
-    "standardDeviation" -> StandardDeviationAnalyzerJob,
-    "sum" -> SumAnalyzerJob,
-    "uniqueness" -> UniquenessAnalyzerJob,
-    "uniqueValueRatio" -> UniqueValueRatioAnalyzerJob
-  )
-
   def getAvailableAnalyzers: Seq[Map[String, Any]] = {
-    availableAnalyzers.map(
-      entry => Map[String, Any](
-        "name" -> entry._2.name, "key" -> entry._1, "description" -> entry._2.description,
-      "parameters" -> entry._2.acceptedRequestParams().map(param => Map[String, Any](
-        "name" -> param.name,
-        "type" -> param._type
-    )))).toSeq
+    AnalysisRun.availableExtractors.map {
+      case (analyzerKey: String, extractor: AnalyzerExtractor[_]) =>
+        val allowedParameters =  extractor.acceptedRequestParams().map(
+          param => Map[String, Any]("name" -> param.name, "type" -> param._type))
+        Map[String, Any](
+          "name" -> extractor.name,
+          "key" -> analyzerKey,
+          "description" -> extractor.description,
+          "parameters" -> allowedParameters
+          )
+    }.toSeq
   }
 
   def getJob(jobId: String): Map[String, Any] = {
     val job = Option(jobs(jobId))
     job match {
       case Some(theJob) =>
-        var response = Map[String, Any]("id" -> jobId,
-          "status" -> theJob.status.toString,
-          "startingTime" -> theJob.startTime,
-          "finishingTime" -> theJob.endTime,
-          "result" -> theJob.result,
-          "errorMessage" -> theJob.errorMessage,
-          "name" -> theJob.analyzerName,
-          "params" -> theJob.parameters
-        )
-        theJob.analyzerName match {
-          case "Uniqueness" | "UniqueValueRatio" =>
-            response += ("query" -> UniquenessAnalyzerJob.parseQuery(theJob.parameters))
-          case "Distinctness" | "CountDistinct"  =>
-            response += ("query" -> DistinctnessAnalyzerJob.parseQuery(theJob.parameters))
-          case _ =>
-        }
-        response
+        convertJob(jobId, theJob)
       case None =>
         throw new IllegalArgumentException("Job Id is not assigned")
     }
@@ -69,38 +36,60 @@ class JobManagement {
   def getJobs: Seq[Map[String, Any]] = {
     jobs.map {
       case (id: String, job: ExecutableAnalyzerJob) =>
-        val status = job.status
-        var m = Map[String, Any](
-          "id" -> id,
-          "name" -> job.analyzerName,
-          "status" -> status.toString)
-        m += "startingTime" -> job.startTime
-        if (status == JobStatus.completed) {
-          m += ("result" -> job.result)
-          m += ("finishingTime" -> job.endTime)
-        } else if (status == JobStatus.error) {
-          m += ("errorMessage" -> job.errorMessage)
-        }
-        m
+        convertJob(id, job)
     }.toSeq
   }
 
-  def startJob(requestedAnalyzer: String, params: JValue): String = {
-    val jobId = randomUUID().toString.replace("-", "")
+  private def convertJob(jobId: String, job: ExecutableAnalyzerJob): Map[String, Any] = {
+    val analyzerResponses = job.result.map { case (analyzer, metric) =>
+      val params = job.analyzerToParam(analyzer)
+      val analyzerKey = params.analyzer
+      val analyzerName = AnalysisRun.availableExtractors(analyzerKey).name
+      val result = metric.value
 
-    if (!availableAnalyzers.exists(_._1 == requestedAnalyzer)) {
-      throw new NoSuchAnalyzerException(
-        s"There is no analyzer called $requestedAnalyzer. " +
-          s"Available analyzers are ${availableAnalyzers.keys.mkString("[", ", ", "]")}")
+      var analyzerResponse = Map[String, Any](
+        "name" -> analyzerName,
+        "params" -> params.toMap
+      )
+
+      if (result.isSuccess) {
+        analyzerResponse += "status" -> JobStatus.completed.toString
+        val resultValue = result.get match {
+          case distribution: Distribution => distribution.values
+          case value => value
+        }
+        analyzerResponse += "result" -> resultValue
+
+        if (job.context == AnalyzerContext.jdbc) {
+          analyzerKey match {
+            case "uniqueness" | "uniqueValueRatio" =>
+              analyzerResponse += ("query" -> UniquenessAnalyzerExtractor.parseQuery(job.tableName,
+                params.asInstanceOf[MultiColumnAnalyzerParams]))
+            case "distinctness" | "countDistinct"  =>
+              analyzerResponse += ("query" -> DistinctnessAnalyzerExtractor.parseQuery(job.tableName,
+                params.asInstanceOf[MultiColumnAnalyzerParams]))
+            case _ =>
+          }
+        }
+      } else {
+        analyzerResponse += "status" -> JobStatus.error.toString
+        analyzerResponse += "errorMessage" -> result.toString
+      }
+
+      analyzerResponse
     }
 
-    val analyzer = availableAnalyzers(requestedAnalyzer)
-
-    val job = analyzer.from(params)
-    jobs += (jobId -> job)
-    job.start()
-
-    jobId
+    Map[String, Any](
+      "id" -> jobId,
+      "status" -> job.status.toString,
+      "startingTime" -> job.startTime,
+      "finishingTime" -> job.endTime,
+      "errorMessage" -> job.errorMessage,
+      "name" -> job.jobName,
+      "table" -> job.tableName,
+      "context" -> job.context,
+      "analyzers" -> analyzerResponses
+    )
   }
 
   def startJobs(tableName: String, context: String, parsedBody: JValue): Any = {
@@ -116,7 +105,6 @@ class JobManagement {
     analysisRunJob.start()
 
     jobId
-
   }
 
   def deleteJob(jobId: String): Unit = {
@@ -148,10 +136,12 @@ class JobManagement {
   }
 
   def getJobParams(jobId: String): Map[String, Any] = {
-    jobs(jobId).parameters
+    // TODO: rework
+    Map()
   }
 
   def getJobResult(jobId: String): Any = {
+    // TODO: rework
     jobs(jobId).result
   }
 
@@ -162,17 +152,32 @@ class JobManagement {
 }
 
 trait AnalyzerParams {
-  val context: String
-  val table: String
+  val analyzer: String
+  def toMap: Map[String, Any] = {
+    Map("analyzer" -> analyzer)
+  }
 }
 
-case class ColumnAnalyzerParams(context: String, table: String, column: String)
-  extends AnalyzerParams
+case class ColumnAnalyzerParams(analyzer:String, column: String)
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("column" -> column)
+  }
+}
 
-case class ColumnAndWhereAnalyzerParams(context: String, table: String,
+case class ColumnAndWhereAnalyzerParams(analyzer:String,
                                         column: String,
                                         where: Option[String] = None)
-  extends AnalyzerParams
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("column" -> column, "where" -> where)
+  }
+}
 
-case class MultiColumnAnalyzerParams(context: String, table: String, columns: Seq[String])
-  extends AnalyzerParams
+case class MultiColumnAnalyzerParams(analyzer:String,
+                                     columns: Seq[String])
+  extends AnalyzerParams {
+  override def toMap: Map[String, Any] = {
+    super.toMap ++ Map("columns" -> columns)
+  }
+}

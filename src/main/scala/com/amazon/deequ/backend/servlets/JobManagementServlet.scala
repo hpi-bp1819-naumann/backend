@@ -49,16 +49,6 @@ class JobManagementServlet extends Servlet {
     } catch errorHandling
   }
 
-  post("/:analyzer/start") {
-    try {
-      val analyzer = params("analyzer")
-      val jobId = jobManager.startJob(analyzer, parsedBody)
-      val response = ("message" -> "Successfully started job") ~
-        ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
-      Ok(response)
-    } catch errorHandling
-  }
-
   post("/:jobId/cancel") {
     try {
       val jobId = params("jobId")
