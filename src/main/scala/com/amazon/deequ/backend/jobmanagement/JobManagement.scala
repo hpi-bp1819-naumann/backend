@@ -3,6 +3,7 @@ package com.amazon.deequ.backend.jobmanagement
 import java.util.UUID.randomUUID
 
 import com.amazon.deequ.backend.jobmanagement.extractors.{AnalyzerExtractor, DistinctnessAnalyzerExtractor, UniquenessAnalyzerExtractor}
+import com.amazon.deequ.metrics.Distribution
 import org.json4s.JValue
 
 class JobManagement {
@@ -43,21 +44,36 @@ class JobManagement {
     val analyzerResponses = job.result.map { case (analyzer, metric) =>
       val params = job.analyzerToParam(analyzer)
       val analyzerKey = params.analyzer
+      val analyzerName = AnalysisRun.availableExtractors(analyzerKey).name
+      val result = metric.value
 
       var analyzerResponse = Map[String, Any](
-        "result" -> metric.value,
+        "name" -> analyzerName,
         "params" -> params.toMap
       )
-      if (job.context == AnalyzerContext.jdbc) {
-        analyzerKey match {
-          case "uniqueness" | "uniqueValueRatio" =>
-            analyzerResponse += ("query" -> UniquenessAnalyzerExtractor.parseQuery(job.tableName,
-              params.asInstanceOf[MultiColumnAnalyzerParams]))
-          case "distinctness" | "countDistinct"  =>
-            analyzerResponse += ("query" -> DistinctnessAnalyzerExtractor.parseQuery(job.tableName,
-              params.asInstanceOf[MultiColumnAnalyzerParams]))
-          case _ =>
+
+      if (result.isSuccess) {
+        analyzerResponse += "status" -> JobStatus.completed.toString
+        val resultValue = result.get match {
+          case distribution: Distribution => distribution.values
+          case value => value
         }
+        analyzerResponse += "result" -> resultValue
+
+        if (job.context == AnalyzerContext.jdbc) {
+          analyzerKey match {
+            case "uniqueness" | "uniqueValueRatio" =>
+              analyzerResponse += ("query" -> UniquenessAnalyzerExtractor.parseQuery(job.tableName,
+                params.asInstanceOf[MultiColumnAnalyzerParams]))
+            case "distinctness" | "countDistinct"  =>
+              analyzerResponse += ("query" -> DistinctnessAnalyzerExtractor.parseQuery(job.tableName,
+                params.asInstanceOf[MultiColumnAnalyzerParams]))
+            case _ =>
+          }
+        }
+      } else {
+        analyzerResponse += "status" -> JobStatus.error.toString
+        analyzerResponse += "errorMessage" -> result.toString
       }
 
       analyzerResponse
@@ -70,6 +86,8 @@ class JobManagement {
       "finishingTime" -> job.endTime,
       "errorMessage" -> job.errorMessage,
       "name" -> job.jobName,
+      "table" -> job.tableName,
+      "context" -> job.context,
       "analyzers" -> analyzerResponses
     )
   }
