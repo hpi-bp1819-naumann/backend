@@ -52,9 +52,17 @@ class JobManagementServlet extends Servlet {
   post("/:analyzer/start") {
     try {
       val analyzer = params("analyzer")
-      val jobId = jobManager.startJob(analyzer, parsedBody)
+      val jobId = jobManager.startAnalyzer(analyzer, parsedBody)
       val response = ("message" -> "Successfully started job") ~
         ("analyzer" -> analyzer) ~ ("jobId" -> jobId.toString)
+      Ok(response)
+    } catch errorHandling
+  }
+
+  post("/columnProfiler/start") {
+    try {
+      val jobId = jobManager.startColumnProfiler(parsedBody)
+      val response = ("message" -> "REPLACE THIS MESSAGE WITH SOMETHING MEANINGFULL") ~ ("jobId" -> jobId.toString)
       Ok(response)
     } catch errorHandling
   }

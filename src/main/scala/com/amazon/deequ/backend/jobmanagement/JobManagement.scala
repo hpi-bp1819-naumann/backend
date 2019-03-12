@@ -83,7 +83,7 @@ class JobManagement {
     }.toSeq
   }
 
-  def startJob(requestedAnalyzer: String, params: JValue): String = {
+  def startAnalyzer(requestedAnalyzer: String, params: JValue): String = {
     val jobId = randomUUID().toString.replace("-", "")
 
     if (!availableAnalyzers.exists(_._1 == requestedAnalyzer)) {
@@ -99,6 +99,17 @@ class JobManagement {
     job.start()
 
     jobId
+  }
+
+  def startColumnProfiler(params: JValue): String = {
+    try {
+      val jobId = randomUUID().toString.replace("-", "")
+      val job = ColumnProfilerJob.from(params)
+      jobs += (jobId -> job)
+      job.start()
+
+      jobId
+    }
   }
 
   def deleteJob(jobId: String): Unit = {
@@ -157,4 +168,7 @@ case class ColumnAndWhereAnalyzerParams(context: String, table: String,
   extends AnalyzerParams
 
 case class MultiColumnAnalyzerParams(context: String, table: String, columns: Seq[String])
+  extends AnalyzerParams
+
+case class BaseParams(context: String, table: String)
   extends AnalyzerParams
