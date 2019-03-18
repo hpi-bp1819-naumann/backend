@@ -1,11 +1,8 @@
 package com.amazon.deequ.backend.jobmanagement
 
-import com.amazon.deequ.profiles.{ColumnProfile, ColumnProfilerRunner, ColumnProfiles, NumericColumnProfile}
-import com.amazon.deequ.analyzers.{MaxState, Maximum}
-import com.amazon.deequ.metrics.DoubleMetric
+import com.amazon.deequ.profiles.{ColumnProfile, ColumnProfilerRunner, NumericColumnProfile}
 import org.json4s.JValue
-import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, withJdbc, withSpark}
-import com.google.gson.{JsonArray, JsonObject, JsonPrimitive}
+import com.amazon.deequ.backend.utils.JdbcUtils.{connectionProperties, jdbcUrl, withSpark}
 
 object ColumnProfilerJob extends AnalyzerJob[BaseParams] {
 
