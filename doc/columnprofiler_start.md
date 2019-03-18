@@ -1,5 +1,6 @@
-# Headline
-Description
+# Start Column Profiler
+Starts the Column Profiler which analyzes all columns of the
+given table. Is handled like an analyzer.
 
 __URL:__ `/api/jobs/columnProfiler/start`  
 __Method:__ `POST`  

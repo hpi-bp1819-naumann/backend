@@ -43,7 +43,7 @@ Description | Method | Path
 ---- | ---- | ----
 [List Analyzers:](./doc/analyzers.md) | `GET` | `/api/jobs/analyzers`
 [Start Analyzer:](./doc/analyzer_start.md) | `POST` | `/api/jobs/:analyzer/start`
-[Start ColumnProfiler:](./doc/columnprofiler_start.md) | `POST` | `/api/jobs/columnProfiler/start`
+[Start Column Profiler:](./doc/columnprofiler_start.md) | `POST` | `/api/jobs/columnProfiler/start`
 [List Jobs:](./doc/jobs.md) | `GET` | `/api/jobs/`
 [Job information:](./doc/job_information.md) | `GET` | `/api/jobs/:jobId`
 [Delete Job:](./doc/job_delete.md) | `DELETE` | `/api/jobs/:jobId`
