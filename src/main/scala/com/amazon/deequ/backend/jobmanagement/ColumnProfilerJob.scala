@@ -25,29 +25,68 @@ object ColumnProfilerJob extends AnalyzerJob[BaseParams] {
   }
 
   def toJsonObject(result: com.amazon.deequ.profiles.ColumnProfiles): Any = {
-//    result.profiles.map {
-//      case (name: String, profile: ColumnProfile) =>
-//        "column" -> profile.column,
-//        "completeness" -> profile.completeness,
-//        "approximateNumDistinctValues" -> profile.approximateNumDistinctValues
-//      )
-//    }.toSeq
+    var json = Map[String, Any]()
 
-//      jobs.map {
-//        case (id: String, job: ExecutableAnalyzerJob) =>
-//          val status = job.status
-//          var m = Map[String, Any](
-//            "id" -> id,
-//            "name" -> job.analyzerName,
-//            "status" -> status.toString)
-//          m += "startingTime" -> job.startTime
-//          if (status == JobStatus.completed) {
-//            m += ("result" -> job.result)
-//            m += ("finishingTime" -> job.endTime)
-//          }
-//          m
-//      }.toSeq
-//    )
+    var columns = Set[Any]()
+
+    result.profiles.values.foreach { profile =>
+
+      var columnProfileJson = Map[String, Any]()
+      columnProfileJson += ("column" -> profile.column)
+      columnProfileJson += ("dataType" -> profile.dataType.toString)
+      columnProfileJson += ("isDataTypeInferred" -> profile.isDataTypeInferred.toString)
+
+      if (profile.typeCounts.nonEmpty) {
+        var typeCountsJson = Map[String, Any]()
+        profile.typeCounts.foreach { case (typeName, count) =>
+          typeCountsJson += (typeName -> count.toString)
+        }
+      }
+
+      columnProfileJson += ("completeness" -> profile.completeness)
+      columnProfileJson += ("approximateNumDistinctValues" ->
+        profile.approximateNumDistinctValues)
+
+      if (profile.histogram.isDefined) {
+        val histogram = profile.histogram.get
+        var histogramJson = Set[Any]()
+
+        histogram.values.foreach { case (name, distributionValue) =>
+          var histogramEntry = Map[String, Any]()
+          histogramEntry += ("value" -> name)
+          histogramEntry +=("count"-> distributionValue.absolute)
+          histogramEntry += ("ratio"-> distributionValue.ratio)
+          histogramJson += histogramEntry
+        }
+
+        columnProfileJson += ("histogram" -> histogramJson)
+      }
+
+      profile match {
+        case numericColumnProfile: NumericColumnProfile =>
+          numericColumnProfile.mean.foreach { mean =>
+            columnProfileJson += ("mean"-> mean)
+          }
+          numericColumnProfile.maximum.foreach { maximum =>
+            columnProfileJson += ("maximum"-> maximum)
+          }
+          numericColumnProfile.minimum.foreach { minimum =>
+            columnProfileJson += ("minimum"-> minimum)
+          }
+          numericColumnProfile.sum.foreach { sum =>
+            columnProfileJson += ("sum"-> sum)
+          }
+          numericColumnProfile.stdDev.foreach { stdDev =>
+            columnProfileJson += ("stdDev"-> stdDev)
+          }
+        case _ =>
+      }
+
+      columns += columnProfileJson
+    }
+
+    json += ("columns"-> columns)
+    json
   }
 
   def funcWithSpark(params: BaseParams): Any = {
@@ -55,10 +94,7 @@ object ColumnProfilerJob extends AnalyzerJob[BaseParams] {
     withSpark { session =>
       val rows = session.read.jdbc(jdbcUrl, params.table, connectionProperties())
       val result = ColumnProfilerRunner().onData(rows).run()
-      //return toJsonObject(ColumnProfiles.toJsonObject(result.profiles.values.toSeq))
-      //return ColumnProfiles.toJson(result.profiles.values)
       return toJsonObject(result)
-      //return result
     }
   }
 }
