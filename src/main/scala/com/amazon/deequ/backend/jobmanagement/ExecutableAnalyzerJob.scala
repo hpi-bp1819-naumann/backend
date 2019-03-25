@@ -55,8 +55,6 @@ case class ExecutableAnalyzerJob (
   }
 }
 
-
-
 object JobStatus extends Enumeration {
   val ready, running, completed, error = Value
 }

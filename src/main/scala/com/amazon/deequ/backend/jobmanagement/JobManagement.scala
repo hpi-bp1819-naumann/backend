@@ -190,9 +190,6 @@ trait AnalyzerParams {
   }
 }
 
-case class TableAnalyzerParams(analyzer: String)
-  extends AnalyzerParams {}
-
 case class ColumnAnalyzerParams(analyzer:String, column: String)
   extends AnalyzerParams {
   override def toMap: Map[String, Any] = {
