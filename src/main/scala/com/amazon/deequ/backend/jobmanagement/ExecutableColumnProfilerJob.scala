@@ -1,7 +1,5 @@
 package com.amazon.deequ.backend.jobmanagement
 
-import com.amazon.deequ.metrics.Metric
-
 /**
   *
   * @param tableName Name of table to execute analyzer on
