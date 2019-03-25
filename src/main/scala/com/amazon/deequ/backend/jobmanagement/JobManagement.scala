@@ -8,6 +8,7 @@ import org.json4s.JValue
 
 class JobManagement {
   private var jobs = synchronized(Map[String, ExecutableAnalyzerJob]())
+  private var columnProfilerJobs = synchronized(Map[String, ExecutableColumnProfilerJob]())
 
   def getAvailableAnalyzers: Seq[Map[String, Any]] = {
     AnalysisRun.availableExtractors.map {
@@ -107,6 +108,37 @@ class JobManagement {
     jobId
   }
 
+  def startColumnProfiler(tableName: String): Any = {
+    val jobId = randomUUID().toString.replace("-", "")
+    val job = ColumnProfilerJob(tableName).run
+
+    columnProfilerJobs += (jobId -> job)
+    job.start()
+
+    jobId
+  }
+
+  def getColumnProfilerResult(jobId: String): Map[String, Any] = {
+    val job = Option(columnProfilerJobs(jobId))
+    job match {
+      case Some(theJob) =>
+        Map[String, Any]("id" -> jobId,
+          "status" -> theJob.status,
+          "startingTime" -> theJob.startTime,
+          "finishingTime" -> theJob.endTime,
+          "result" -> theJob.result)
+      case None =>
+        throw new IllegalArgumentException("Job Id is not assigned")
+    }
+  }
+
+  def getColumnProfilerJobs: Seq[Map[String, Any]] = {
+    columnProfilerJobs.map {
+      case (id: String, job: ExecutableColumnProfilerJob) =>
+        Map[String, Any](id -> job.result)
+    }.toSeq
+  }
+
   def deleteJob(jobId: String): Unit = {
     jobs -= jobId
   }
@@ -157,6 +189,9 @@ trait AnalyzerParams {
     Map("analyzer" -> analyzer)
   }
 }
+
+case class TableAnalyzerParams(analyzer: String)
+  extends AnalyzerParams {}
 
 case class ColumnAnalyzerParams(analyzer:String, column: String)
   extends AnalyzerParams {

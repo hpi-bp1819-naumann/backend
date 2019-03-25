@@ -4,23 +4,17 @@ import com.amazon.deequ.metrics.Metric
 
 /**
   *
-  * @param jobName
   * @param tableName Name of table to execute analyzer on
-  * @param context "spark" or "jdbc"
   * @param jobFunction Function that returns a Map of an analyzer to its calculated metric
-  * @param analyzerToParam Map from an analyzer to its corresponding parameters
   */
-case class ExecutableAnalyzerJob (
-                                   jobName: String,
-                                   tableName: String,
-                                   context: String,
-                                   jobFunction: () => Map[Any, Metric[_]],
-                                   analyzerToParam: Map[Any, AnalyzerParams])
 
+case class ExecutableColumnProfilerJob (
+                                         tableName: String,
+                                         jobFunction: () => Map[String, Any])
   extends Runnable {
 
   var status: JobStatus.Value = JobStatus.ready
-  var result: Map[Any, Metric[_]] = Map()
+  var result: Map[String, Any] = Map()
   var startTime: Long = _
   var endTime: Long = _
   var errorMessage: Option[String] = None
@@ -53,10 +47,4 @@ case class ExecutableAnalyzerJob (
 
     endTime = System.currentTimeMillis()
   }
-}
-
-
-
-object JobStatus extends Enumeration {
-  val ready, running, completed, error = Value
 }

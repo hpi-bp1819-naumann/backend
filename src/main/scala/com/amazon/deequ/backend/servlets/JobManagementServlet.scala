@@ -109,4 +109,28 @@ class JobManagementServlet extends Servlet {
       Ok(response)
     } catch errorHandling
   }
+
+  post("/:table/startColumnProfiler") {
+    try {
+      val tableName = params("table")
+      val jobId = jobManager.startColumnProfiler(tableName)
+      val response = ("message" -> "Successfully started job") ~ ("jobId" -> jobId.toString)
+      Ok(response)
+    } catch errorHandling
+  }
+
+  get ("/columnProfilerJobs") {
+    try {
+      val jobs = jobManager.getColumnProfilerJobs
+      Ok("jobs" -> jobs)
+    } catch errorHandling
+  }
+
+  get ("/columnProfilerJobs/:jobId"){
+    try{
+      val jobId = params("jobId")
+      val result = jobManager.getColumnProfilerResult(jobId)
+      Ok("result" -> result)
+    } catch errorHandling
+  }
 }
