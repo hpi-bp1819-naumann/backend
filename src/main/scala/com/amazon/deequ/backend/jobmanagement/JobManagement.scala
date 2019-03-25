@@ -110,7 +110,7 @@ class JobManagement {
 
   def startColumnProfiler(tableName: String): Any = {
     val jobId = randomUUID().toString.replace("-", "")
-    val job = ColumnProfilerJob(tableName).run
+    val job = ColumnProfilerJob(tableName).profile
 
     columnProfilerJobs += (jobId -> job)
     job.start()
@@ -123,7 +123,7 @@ class JobManagement {
     job match {
       case Some(theJob) =>
         Map[String, Any]("id" -> jobId,
-          "status" -> theJob.status,
+          "status" -> theJob.status.toString,
           "startingTime" -> theJob.startTime,
           "finishingTime" -> theJob.endTime,
           "result" -> theJob.result)

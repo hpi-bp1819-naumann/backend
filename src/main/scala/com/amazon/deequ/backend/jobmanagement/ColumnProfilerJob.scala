@@ -7,7 +7,7 @@ import com.amazon.deequ.profiles.{ColumnProfilerRunner, NumericColumnProfile}
 
 case class ColumnProfilerJob(tableName: String){
 
-  def run: ExecutableColumnProfilerJob = {
+  def profile: ExecutableColumnProfilerJob = {
     val analysisRun =
         () => withSpark[Map[String, Any]] { session =>
           val data = session.read.jdbc(DbSettings.dburi, tableName, connectionProperties())
